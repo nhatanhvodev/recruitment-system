@@ -1,0 +1,190 @@
+diff --git a/public/index.html b/public/index.html
+--- a/public/index.html
++++ b/public/index.html
+@@ -0,0 +1,186 @@
++<!DOCTYPE html>
++<html lang="vi">
++<head>
++    <meta charset="UTF-8">
++    <meta name="viewport" content="width=device-width, initial-scale=1.0">
++    <title>Hệ thống Tuyển dụng - Tìm việc làm</title>
++    <link rel="stylesheet" href="css/style.css">
++    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
++</head>
++<body>
++    <!-- Header -->
++    <header class="header">
++        <nav class="navbar">
++            <div class="container">
++                <div class="nav-brand">
++                    <h1><i class="fas fa-briefcase"></i> JobPortal</h1>
++                </div>
++                <ul class="nav-menu">
++                    <li><a href="index.html" class="active">Trang chủ</a></li>
++                    <li><a href="#about">Về chúng tôi</a></li>
++                    <li><a href="#contact">Liên hệ</a></li>
++                    <li class="auth-buttons">
++                        <div id="logged-out-menu" style="display: block;">
++                            <a href="login.html" class="btn btn-outline">Đăng nhập</a>
++                            <a href="register.html" class="btn btn-primary">Đăng ký</a>
++                        </div>
++                        <div id="logged-in-menu" style="display: none;">
++                            <span id="user-name" class="welcome-text"></span>
++                            <a href="dashboard.html" class="btn btn-outline">Dashboard</a>
++                            <button id="logout-btn" class="btn btn-primary">Đăng xuất</button>
++                        </div>
++                    </li>
++                </ul>
++            </div>
++        </nav>
++    </header>
++
++    <!-- Hero Section -->
++    <section class="hero">
++        <div class="container">
++            <div class="hero-content">
++                <h1>Tìm công việc mơ ước của bạn</h1>
++                <p>Khám phá hàng nghìn cơ hội việc làm từ các công ty hàng đầu</p>
++                
++                <!-- Search Form -->
++                <div class="search-form">
++                    <div class="search-inputs">
++                        <div class="input-group">
++                            <i class="fas fa-search"></i>
++                            <input type="text" id="search-keyword" placeholder="Từ khóa, tên công ty...">
++                        </div>
++                        <div class="input-group">
++                            <i class="fas fa-map-marker-alt"></i>
++                            <input type="text" id="search-location" placeholder="Địa điểm">
++                        </div>
++                        <div class="input-group">
++                            <i class="fas fa-briefcase"></i>
++                            <select id="search-job-type">
++                                <option value="">Loại công việc</option>
++                                <option value="full-time">Toàn thời gian</option>
++                                <option value="part-time">Bán thời gian</option>
++                                <option value="contract">Hợp đồng</option>
++                                <option value="internship">Thực tập</option>
++                            </select>
++                        </div>
++                        <button type="button" id="search-btn" class="btn btn-primary">
++                            <i class="fas fa-search"></i> Tìm kiếm
++                        </button>
++                    </div>
++                </div>
++            </div>
++        </div>
++    </section>
++
++    <!-- Jobs Section -->
++    <section class="jobs-section">
++        <div class="container">
++            <div class="section-header">
++                <h2>Việc làm mới nhất</h2>
++                <p>Cập nhật liên tục các cơ hội việc làm hấp dẫn</p>
++            </div>
++
++            <!-- Filter Bar -->
++            <div class="filter-bar">
++                <div class="filter-item">
++                    <label>Sắp xếp:</label>
++                    <select id="sort-jobs">
++                        <option value="newest">Mới nhất</option>
++                        <option value="salary-high">Lương cao nhất</option>
++                        <option value="popular">Phổ biến</option>
++                    </select>
++                </div>
++                <div class="results-count">
++                    <span id="results-count">Đang tải...</span>
++                </div>
++            </div>
++
++            <!-- Jobs Grid -->
++            <div class="jobs-grid" id="jobs-container">
++                <!-- Job cards will be loaded here -->
++                <div class="loading">
++                    <i class="fas fa-spinner fa-spin"></i>
++                    <p>Đang tải việc làm...</p>
++                </div>
++            </div>
++
++            <!-- Pagination -->
++            <div class="pagination" id="pagination">
++                <!-- Pagination will be loaded here -->
++            </div>
++        </div>
++    </section>
++
++    <!-- Stats Section -->
++    <section class="stats-section">
++        <div class="container">
++            <div class="stats-grid">
++                <div class="stat-item">
++                    <i class="fas fa-briefcase"></i>
++                    <h3>1,000+</h3>
++                    <p>Công việc</p>
++                </div>
++                <div class="stat-item">
++                    <i class="fas fa-building"></i>
++                    <h3>500+</h3>
++                    <p>Công ty</p>
++                </div>
++                <div class="stat-item">
++                    <i class="fas fa-users"></i>
++                    <h3>10,000+</h3>
++                    <p>Ứng viên</p>
++                </div>
++                <div class="stat-item">
++                    <i class="fas fa-handshake"></i>
++                    <h3>5,000+</h3>
++                    <p>Việc làm thành công</p>
++                </div>
++            </div>
++        </div>
++    </section>
++
++    <!-- Footer -->
++    <footer class="footer">
++        <div class="container">
++            <div class="footer-content">
++                <div class="footer-section">
++                    <h3><i class="fas fa-briefcase"></i> JobPortal</h3>
++                    <p>Nền tảng tuyển dụng hàng đầu Việt Nam, kết nối nhà tuyển dụng và ứng viên.</p>
++                </div>
++                <div class="footer-section">
++                    <h4>Dành cho ứng viên</h4>
++                    <ul>
++                        <li><a href="#">Tìm việc làm</a></li>
++                        <li><a href="#">Tạo CV</a></li>
++                        <li><a href="#">Hướng dẫn ứng tuyển</a></li>
++                    </ul>
++                </div>
++                <div class="footer-section">
++                    <h4>Dành cho nhà tuyển dụng</h4>
++                    <ul>
++                        <li><a href="#">Đăng tin tuyển dụng</a></li>
++                        <li><a href="#">Tìm ứng viên</a></li>
++                        <li><a href="#">Quản lý tuyển dụng</a></li>
++                    </ul>
++                </div>
++                <div class="footer-section">
++                    <h4>Liên hệ</h4>
++                    <p><i class="fas fa-envelope"></i> contact@jobportal.vn</p>
++                    <p><i class="fas fa-phone"></i> (84) 123 456 789</p>
++                    <div class="social-links">
++                        <a href="#"><i class="fab fa-facebook"></i></a>
++                        <a href="#"><i class="fab fa-linkedin"></i></a>
++                        <a href="#"><i class="fab fa-twitter"></i></a>
++                    </div>
++                </div>
++            </div>
++            <div class="footer-bottom">
++                <p>&copy; 2024 JobPortal. Tất cả quyền được bảo lưu.</p>
++            </div>
++        </div>
++    </footer>
++
++    <script src="js/common.js"></script>
++    <script src="js/jobs.js"></script>
++</body>
++</html>
