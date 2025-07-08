@@ -39,8 +39,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                         $stmt = $db->prepare($query);
                         $stmt->bindParam(':user_id', $user_id);
                         $stmt->bindParam(':company_id', $data->company_id);
-                        $position = $data->position ?? '';
-                        $stmt->bindParam(':position', $position);
+                        $stmt->bindParam(':position', $data->position ?? '');
                         $stmt->execute();
                     }
                 }

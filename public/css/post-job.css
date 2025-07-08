@@ -1,0 +1,557 @@
+ /* Post Job Page Styles */
+ 
+ .post-job-section {
+     padding: 120px 0 80px;
+     min-height: 100vh;
+     background: #f8f9fa;
+ }
+ 
+ .page-header {
+     text-align: center;
+     margin-bottom: 3rem;
+ }
+ 
+ .page-header h1 {
+     color: #333;
+     font-size: 2.5rem;
+     margin-bottom: 1rem;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     gap: 1rem;
+ }
+ 
+ .page-header h1 i {
+     color: #2c5aa0;
+ }
+ 
+ .page-header p {
+     color: #666;
+     font-size: 1.1rem;
+ }
+ 
+ .post-job-container {
+     display: grid;
+     grid-template-columns: 2fr 1fr;
+     gap: 3rem;
+     max-width: 1400px;
+     margin: 0 auto;
+ }
+ 
+ .post-job-content {
+     background: white;
+     border-radius: 15px;
+     box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+     overflow: hidden;
+ }
+ 
+ .job-form {
+     padding: 2rem;
+ }
+ 
+ .form-section {
+     margin-bottom: 3rem;
+     padding-bottom: 2rem;
+     border-bottom: 1px solid #f0f0f0;
+ }
+ 
+ .form-section:last-child {
+     border-bottom: none;
+     margin-bottom: 0;
+ }
+ 
+ .form-section h3 {
+     color: #333;
+     font-size: 1.3rem;
+     margin-bottom: 1.5rem;
+     display: flex;
+     align-items: center;
+     gap: 0.5rem;
+ }
+ 
+ .form-section h3 i {
+     color: #2c5aa0;
+ }
+ 
+ .form-row {
+     display: grid;
+     grid-template-columns: 1fr 1fr;
+     gap: 1.5rem;
+     margin-bottom: 1.5rem;
+ }
+ 
+ .form-row.single {
+     grid-template-columns: 1fr;
+ }
+ 
+ .form-group {
+     display: flex;
+     flex-direction: column;
+ }
+ 
+ .form-group label {
+     font-weight: 600;
+     color: #333;
+     margin-bottom: 0.5rem;
+     font-size: 0.95rem;
+ }
+ 
+ .form-group input,
+ .form-group select,
+ .form-group textarea {
+     padding: 12px 15px;
+     border: 2px solid #e1e5e9;
+     border-radius: 8px;
+     font-size: 0.95rem;
+     transition: all 0.3s ease;
+     background: white;
+ }
+ 
+ .form-group input:focus,
+ .form-group select:focus,
+ .form-group textarea:focus {
+     outline: none;
+     border-color: #2c5aa0;
+     box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
+ }
+ 
+ .form-group textarea {
+     resize: vertical;
+     min-height: 120px;
+     font-family: inherit;
+     line-height: 1.6;
+ }
+ 
+ .form-hint {
+     font-size: 0.85rem;
+     color: #666;
+     margin-top: 0.5rem;
+     font-style: italic;
+ }
+ 
+ /* Editor Toolbar */
+ .editor-toolbar {
+     display: flex;
+     gap: 0.5rem;
+     margin-bottom: 0.5rem;
+     padding: 0.5rem;
+     background: #f8f9fa;
+     border-radius: 8px 8px 0 0;
+     border: 2px solid #e1e5e9;
+     border-bottom: none;
+ }
+ 
+ .editor-btn {
+     background: none;
+     border: none;
+     padding: 0.5rem;
+     border-radius: 4px;
+     cursor: pointer;
+     color: #666;
+     transition: all 0.3s;
+ }
+ 
+ .editor-btn:hover {
+     background: #2c5aa0;
+     color: white;
+ }
+ 
+ .editor-toolbar + textarea {
+     border-radius: 0 0 8px 8px;
+     border-top: none;
+ }
+ 
+ /* Character Count */
+ .char-count {
+     text-align: right;
+     font-size: 0.85rem;
+     color: #666;
+     margin-top: 0.5rem;
+ }
+ 
+ .char-count.warning {
+     color: #ffc107;
+ }
+ 
+ .char-count.danger {
+     color: #dc3545;
+ }
+ 
+ /* Benefits Section */
+ .benefits-section {
+     margin-top: 1rem;
+ }
+ 
+ .benefits-grid {
+     display: grid;
+     grid-template-columns: repeat(2, 1fr);
+     gap: 1rem;
+     margin-bottom: 2rem;
+ }
+ 
+ .benefit-item {
+     position: relative;
+ }
+ 
+ .benefit-item input[type="checkbox"] {
+     position: absolute;
+     opacity: 0;
+     cursor: pointer;
+ }
+ 
+ .benefit-item label {
+     display: flex;
+     align-items: center;
+     gap: 1rem;
+     padding: 1rem;
+     border: 2px solid #e1e5e9;
+     border-radius: 8px;
+     cursor: pointer;
+     transition: all 0.3s;
+     background: white;
+     font-weight: 500;
+ }
+ 
+ .benefit-item label i {
+     font-size: 1.2rem;
+     color: #666;
+     transition: color 0.3s;
+ }
+ 
+ .benefit-item input[type="checkbox"]:checked + label {
+     border-color: #2c5aa0;
+     background: rgba(44, 90, 160, 0.05);
+ }
+ 
+ .benefit-item input[type="checkbox"]:checked + label i {
+     color: #2c5aa0;
+ }
+ 
+ /* Form Actions */
+ .form-actions {
+     display: flex;
+     gap: 1rem;
+     justify-content: flex-end;
+     padding: 2rem;
+     background: #f8f9fa;
+     margin: 0 -2rem -2rem -2rem;
+     border-radius: 0 0 15px 15px;
+ }
+ 
+ .btn-secondary {
+     background: #6c757d;
+     color: white;
+     border: 2px solid #6c757d;
+ }
+ 
+ .btn-secondary:hover {
+     background: #545b62;
+     border-color: #545b62;
+ }
+ 
+ /* Post Job Sidebar */
+ .post-job-sidebar {
+     display: flex;
+     flex-direction: column;
+     gap: 2rem;
+ }
+ 
+ .tips-section,
+ .pricing-section {
+     background: white;
+     padding: 1.5rem;
+     border-radius: 15px;
+     box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+ }
+ 
+ .tips-section h4,
+ .pricing-section h4 {
+     color: #333;
+     margin-bottom: 1.5rem;
+     display: flex;
+     align-items: center;
+     gap: 0.5rem;
+ }
+ 
+ .tips-section h4 i,
+ .pricing-section h4 i {
+     color: #2c5aa0;
+ }
+ 
+ .tip-item {
+     margin-bottom: 1.5rem;
+     padding-bottom: 1rem;
+     border-bottom: 1px solid #f0f0f0;
+ }
+ 
+ .tip-item:last-child {
+     border-bottom: none;
+     margin-bottom: 0;
+ }
+ 
+ .tip-item h5 {
+     color: #333;
+     margin-bottom: 0.5rem;
+     font-size: 0.95rem;
+ }
+ 
+ .tip-item p {
+     color: #666;
+     font-size: 0.9rem;
+     line-height: 1.5;
+ }
+ 
+ /* Pricing Items */
+ .pricing-item {
+     border: 2px solid #e1e5e9;
+     border-radius: 10px;
+     padding: 1.5rem;
+     margin-bottom: 1rem;
+     transition: all 0.3s;
+ }
+ 
+ .pricing-item:last-child {
+     margin-bottom: 0;
+ }
+ 
+ .pricing-item.active {
+     border-color: #2c5aa0;
+     background: rgba(44, 90, 160, 0.05);
+ }
+ 
+ .price-header {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     margin-bottom: 1rem;
+ }
+ 
+ .price-header h5 {
+     color: #333;
+     margin: 0;
+ }
+ 
+ .price {
+     font-weight: 700;
+     color: #2c5aa0;
+     font-size: 1.1rem;
+ }
+ 
+ .price-features {
+     list-style: none;
+     padding: 0;
+     margin: 0 0 1rem 0;
+ }
+ 
+ .price-features li {
+     display: flex;
+     align-items: center;
+     gap: 0.5rem;
+     margin-bottom: 0.5rem;
+     color: #666;
+     font-size: 0.9rem;
+ }
+ 
+ .price-features i {
+     color: #28a745;
+     font-size: 0.8rem;
+ }
+ 
+ .upgrade-btn {
+     width: 100%;
+     margin-top: 1rem;
+ }
+ 
+ /* Job Preview Modal */
+ .job-preview-content {
+     max-width: 800px;
+     width: 95%;
+     max-height: 90vh;
+ }
+ 
+ .modal-footer {
+     padding: 1.5rem 2rem;
+     border-top: 1px solid #eee;
+     display: flex;
+     justify-content: flex-end;
+     gap: 1rem;
+     background: #f8f9fa;
+ }
+ 
+ #job-preview-content {
+     padding: 1rem 0;
+ }
+ 
+ .preview-section {
+     margin-bottom: 2rem;
+ }
+ 
+ .preview-section h4 {
+     color: #333;
+     margin-bottom: 1rem;
+     font-size: 1.2rem;
+     display: flex;
+     align-items: center;
+     gap: 0.5rem;
+ }
+ 
+ .preview-section h4 i {
+     color: #2c5aa0;
+ }
+ 
+ .preview-content {
+     color: #666;
+     line-height: 1.7;
+ }
+ 
+ .preview-meta {
+     display: grid;
+     grid-template-columns: repeat(2, 1fr);
+     gap: 1rem;
+     margin-bottom: 2rem;
+ }
+ 
+ .preview-meta-item {
+     display: flex;
+     justify-content: space-between;
+     padding: 0.75rem;
+     background: #f8f9fa;
+     border-radius: 8px;
+ }
+ 
+ .preview-meta-label {
+     font-weight: 600;
+     color: #333;
+ }
+ 
+ .preview-meta-value {
+     color: #666;
+ }
+ 
+ .preview-benefits {
+     display: flex;
+     flex-wrap: wrap;
+     gap: 0.5rem;
+ }
+ 
+ .preview-benefit-tag {
+     background: #2c5aa0;
+     color: white;
+     padding: 0.25rem 0.75rem;
+     border-radius: 20px;
+     font-size: 0.85rem;
+     display: flex;
+     align-items: center;
+     gap: 0.5rem;
+ }
+ 
+ /* Responsive Design */
+ @media (max-width: 1200px) {
+     .post-job-container {
+         grid-template-columns: 1fr;
+         gap: 2rem;
+     }
+     
+     .post-job-sidebar {
+         order: -1;
+     }
+ }
+ 
+ @media (max-width: 768px) {
+     .page-header h1 {
+         font-size: 2rem;
+         flex-direction: column;
+         gap: 0.5rem;
+     }
+     
+     .form-row {
+         grid-template-columns: 1fr;
+         gap: 1rem;
+     }
+     
+     .benefits-grid {
+         grid-template-columns: 1fr;
+     }
+     
+     .form-actions {
+         flex-direction: column;
+     }
+     
+     .form-actions .btn {
+         width: 100%;
+     }
+     
+     .preview-meta {
+         grid-template-columns: 1fr;
+     }
+     
+     .job-form {
+         padding: 1.5rem;
+     }
+ }
+ 
+ @media (max-width: 480px) {
+     .post-job-section {
+         padding: 100px 0 60px;
+     }
+     
+     .container {
+         padding: 0 15px;
+     }
+     
+     .job-form {
+         padding: 1rem;
+     }
+     
+     .form-actions {
+         padding: 1.5rem 1rem;
+         margin: 0 -1rem -1rem -1rem;
+     }
+ }
+ 
+ /* Loading States */
+ .form-loading {
+     opacity: 0.6;
+     pointer-events: none;
+ }
+ 
+ .btn-loading {
+     position: relative;
+     color: transparent;
+ }
+ 
+ .btn-loading::after {
+     content: '';
+     position: absolute;
+     top: 50%;
+     left: 50%;
+     transform: translate(-50%, -50%);
+     width: 20px;
+     height: 20px;
+     border: 2px solid transparent;
+     border-top: 2px solid currentColor;
+     border-radius: 50%;
+     animation: spin 1s linear infinite;
+ }
+ 
+ @keyframes spin {
+     0% { transform: translate(-50%, -50%) rotate(0deg); }
+     100% { transform: translate(-50%, -50%) rotate(360deg); }
+ }
+ 
+ /* Success Messages */
+ .success-message {
+     background: #d4edda;
+     border: 1px solid #c3e6cb;
+     color: #155724;
+     padding: 1rem;
+     border-radius: 8px;
+     margin-bottom: 1rem;
+     display: flex;
+     align-items: center;
+     gap: 0.5rem;
+ }
+ 
+ .success-message i {
+     color: #28a745;
+ }

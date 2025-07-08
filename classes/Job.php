@@ -92,8 +92,14 @@ class Job {
     }
 
     public function readOne() {
-        $query = "SELECT j.*, c.name as company_name, c.description as company_description, 
-                         c.logo as company_logo, c.website as company_website
+        $query = "SELECT j.*, 
+                         c.name as company_name, 
+                         c.description as company_description, 
+                         c.logo as company_logo, 
+                         c.website as company_website,
+                         c.size as company_size,
+                         c.industry as company_industry,
+                         (SELECT COUNT(*) FROM applications a WHERE a.job_id = j.job_id) as application_count
                   FROM " . $this->table_name . " j
                   LEFT JOIN companies c ON j.company_id = c.company_id
                   WHERE j.job_id = :job_id";

@@ -1,440 +1,262 @@
- <!DOCTYPE html>
- <html lang="vi">
- <head>
-     <meta charset="UTF-8">
-     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <title>Dashboard - JobPortal</title>
-     <link rel="stylesheet" href="css/style.css">
-     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
- </head>
- <body>
-     <!-- Header -->
-     <header class="header">
-         <nav class="navbar">
-             <div class="container">
-                 <div class="nav-brand">
-                     <h1><i class="fas fa-briefcase"></i> JobPortal</h1>
-                 </div>
-                 <ul class="nav-menu">
-                     <li><a href="index.html">Trang chủ</a></li>
-                     <li><a href="dashboard.html" class="active">Dashboard</a></li>
-                     <li class="auth-buttons">
-                         <span id="user-name" class="welcome-text"></span>
-                         <button id="logout-btn" class="btn btn-primary">Đăng xuất</button>
-                     </li>
-                 </ul>
-             </div>
-         </nav>
-     </header>
- 
-     <!-- Dashboard Content -->
-     <section class="dashboard-section">
-         <div class="container">
-             <div class="dashboard-header">
-                 <h1>Dashboard ứng viên</h1>
-                 <p>Quản lý hồ sơ và đơn ứng tuyển của bạn</p>
-             </div>
- 
-             <!-- Quick Stats -->
-             <div class="stats-cards">
-                 <div class="stat-card">
-                     <div class="stat-icon">
-                         <i class="fas fa-paper-plane"></i>
-                     </div>
-                     <div class="stat-info">
-                         <h3 id="applications-count">0</h3>
-                         <p>Đơn ứng tuyển</p>
-                     </div>
-                 </div>
-                 <div class="stat-card">
-                     <div class="stat-icon">
-                         <i class="fas fa-eye"></i>
-                     </div>
-                     <div class="stat-info">
-                         <h3 id="profile-views">0</h3>
-                         <p>Lượt xem hồ sơ</p>
-                     </div>
-                 </div>
-                 <div class="stat-card">
-                     <div class="stat-icon">
-                         <i class="fas fa-check-circle"></i>
-                     </div>
-                     <div class="stat-info">
-                         <h3 id="interviews-count">0</h3>
-                         <p>Lời mời phỏng vấn</p>
-                     </div>
-                 </div>
-             </div>
- 
-             <!-- Dashboard Tabs -->
-             <div class="dashboard-tabs">
-                 <button class="tab-btn active" onclick="switchTab('applications')">
-                     <i class="fas fa-paper-plane"></i> Đơn ứng tuyển
-                 </button>
-                 <button class="tab-btn" onclick="switchTab('profile')">
-                     <i class="fas fa-user"></i> Hồ sơ cá nhân
-                 </button>
-                 <button class="tab-btn" onclick="switchTab('saved')">
-                     <i class="fas fa-bookmark"></i> Việc làm đã lưu
-                 </button>
-             </div>
- 
-             <!-- Tab Content -->
-             <div class="tab-content">
-                 <!-- Applications Tab -->
-                 <div id="applications-tab" class="tab-pane active">
-                     <div class="section-header">
-                         <h2>Đơn ứng tuyển của bạn</h2>
-                     </div>
-                     <div id="applications-list" class="applications-list">
-                         <div class="loading">
-                             <i class="fas fa-spinner fa-spin"></i>
-                             <p>Đang tải đơn ứng tuyển...</p>
-                         </div>
-                     </div>
-                 </div>
- 
-                 <!-- Profile Tab -->
-                 <div id="profile-tab" class="tab-pane">
-                     <div class="section-header">
-                         <h2>Hồ sơ cá nhân</h2>
-                     </div>
-                     <div class="profile-form">
-                         <form id="profile-form">
-                             <div class="form-row">
-                                 <div class="form-group">
-                                     <label for="full-name">Họ và tên:</label>
-                                     <input type="text" id="full-name" required>
-                                 </div>
-                                 <div class="form-group">
-                                     <label for="email">Email:</label>
-                                     <input type="email" id="email" readonly>
-                                 </div>
-                             </div>
-                             
-                             <div class="form-row">
-                                 <div class="form-group">
-                                     <label for="phone">Số điện thoại:</label>
-                                     <input type="tel" id="phone">
-                                 </div>
-                                 <div class="form-group">
-                                     <label for="location">Địa điểm:</label>
-                                     <input type="text" id="location">
-                                 </div>
-                             </div>
-                             
-                             <div class="form-group">
-                                 <label for="summary">Giới thiệu bản thân:</label>
-                                 <textarea id="summary" rows="4" placeholder="Mô tả ngắn về bản thân, kinh nghiệm và mục tiêu nghề nghiệp..."></textarea>
-                             </div>
-                             
-                             <div class="form-group">
-                                 <label for="skills">Kỹ năng:</label>
-                                 <input type="text" id="skills" placeholder="JavaScript, PHP, Python, SQL... (cách nhau bằng dấu phẩy)">
-                             </div>
-                             
-                             <div class="form-group">
-                                 <label for="experience">Kinh nghiệm làm việc:</label>
-                                 <textarea id="experience" rows="4" placeholder="Mô tả chi tiết kinh nghiệm làm việc của bạn..."></textarea>
-                             </div>
-                             
-                             <div class="form-group">
-                                 <label for="education">Học vấn:</label>
-                                 <textarea id="education" rows="3" placeholder="Thông tin về trình độ học vấn, bằng cấp..."></textarea>
-                             </div>
-                             
-                             <div class="form-group">
-                                 <button type="submit" class="btn btn-primary">
-                                     <i class="fas fa-save"></i> Cập nhật hồ sơ
-                                 </button>
-                             </div>
-                         </form>
-                     </div>
-                 </div>
- 
-                 <!-- Saved Jobs Tab -->
-                 <div id="saved-tab" class="tab-pane">
-                     <div class="section-header">
-                         <h2>Việc làm đã lưu</h2>
-                     </div>
-                     <div id="saved-jobs-list">
-                         <p class="text-center">Tính năng này sẽ được phát triển trong tương lai.</p>
-                     </div>
-                 </div>
-             </div>
-         </div>
-     </section>
- 
-     <script src="js/common.js"></script>
-     <script>
-         let currentUser = null;
- 
-         document.addEventListener('DOMContentLoaded', function() {
-             currentUser = RecruitmentApp.requireAuth('candidate');
-             if (currentUser) {
-                 loadDashboardData();
-             }
-         });
- 
-         async function loadDashboardData() {
-             await Promise.all([
-                 loadApplications(),
-                 loadUserProfile(),
-                 loadStats()
-             ]);
-         }
- 
-         async function loadApplications() {
-             try {
-                 const result = await RecruitmentApp.getCandidateApplications();
-                 if (result.success) {
-                     displayApplications(result.data);
-                     updateApplicationsCount(result.data.length);
-                 }
-             } catch (error) {
-                 console.error('Error loading applications:', error);
-             }
-         }
- 
-         function displayApplications(applications) {
-             const container = document.getElementById('applications-list');
-             
-             if (applications.length === 0) {
-                 container.innerHTML = `
-                     <div class="empty-state">
-                         <i class="fas fa-inbox"></i>
-                         <h3>Chưa có đơn ứng tuyển nào</h3>
-                         <p>Hãy bắt đầu ứng tuyển các công việc phù hợp!</p>
-                         <a href="index.html" class="btn btn-primary">Tìm việc làm</a>
-                     </div>
-                 `;
-                 return;
-             }
- 
-             container.innerHTML = applications.map(app => `
-                 <div class="application-card">
-                     <div class="application-header">
-                         <h3>${app.job_title}</h3>
-                         <span class="status-badge status-${app.status}">${getStatusText(app.status)}</span>
-                     </div>
-                     <div class="application-details">
-                         <p><strong>Công ty:</strong> ${app.company_name}</p>
-                         <p><strong>Địa điểm:</strong> ${app.location}</p>
-                         <p><strong>Lương:</strong> ${RecruitmentApp.formatCurrency(app.salary)}</p>
-                         <p><strong>Ngày ứng tuyển:</strong> ${RecruitmentApp.formatDate(app.applied_at)}</p>
-                     </div>
-                     <div class="application-actions">
-                         <a href="job-detail.html?id=${app.job_id}" class="btn btn-outline btn-sm">Xem việc làm</a>
-                     </div>
-                 </div>
-             `).join('');
-         }
- 
-         function getStatusText(status) {
-             const statusMap = {
-                 'pending': 'Đang chờ',
-                 'reviewed': 'Đã xem',
-                 'interview': 'Phỏng vấn',
-                 'accepted': 'Được nhận',
-                 'rejected': 'Từ chối'
-             };
-             return statusMap[status] || status;
-         }
- 
-         async function loadUserProfile() {
-             // Load user profile data
-             const emailField = document.getElementById('email');
-             const fullNameField = document.getElementById('full-name');
-             
-             if (emailField) emailField.value = currentUser.email;
-             if (fullNameField) fullNameField.value = currentUser.full_name;
-         }
- 
-         function updateApplicationsCount(count) {
-             const element = document.getElementById('applications-count');
-             if (element) element.textContent = count;
-         }
- 
-         async function loadStats() {
-             // This would load actual stats from the API
-             // For now, using placeholder values
-             document.getElementById('profile-views').textContent = '45';
-             document.getElementById('interviews-count').textContent = '3';
-         }
- 
-         function switchTab(tabName) {
-             // Remove active class from all tabs and panes
-             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-             document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
- 
-             // Add active class to clicked tab and corresponding pane
-             event.target.classList.add('active');
-             document.getElementById(tabName + '-tab').classList.add('active');
-         }
- 
-         // Profile form submission
-         document.getElementById('profile-form').addEventListener('submit', async function(e) {
-             e.preventDefault();
-             RecruitmentApp.showAlert('Cập nhật hồ sơ thành công!', 'success');
-         });
- 
-         // Global function access
-         window.switchTab = switchTab;
-     </script>
- 
-     <style>
-         .dashboard-section {
-             padding: 120px 0 80px;
-             min-height: 100vh;
-         }
- 
-         .dashboard-header {
-             text-align: center;
-             margin-bottom: 3rem;
-         }
- 
-         .stats-cards {
-             display: grid;
-             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-             gap: 2rem;
-             margin-bottom: 3rem;
-         }
- 
-         .stat-card {
-             background: white;
-             padding: 2rem;
-             border-radius: 15px;
-             box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-             display: flex;
-             align-items: center;
-             gap: 1.5rem;
-         }
- 
-         .stat-icon {
-             width: 60px;
-             height: 60px;
-             background: #2c5aa0;
-             color: white;
-             border-radius: 50%;
-             display: flex;
-             align-items: center;
-             justify-content: center;
-             font-size: 1.5rem;
-         }
- 
-         .stat-info h3 {
-             font-size: 2rem;
-             margin-bottom: 0.5rem;
-             color: #333;
-         }
- 
-         .dashboard-tabs {
-             display: flex;
-             gap: 1rem;
-             margin-bottom: 2rem;
-             overflow-x: auto;
-         }
- 
-         .tab-btn {
-             background: white;
-             border: none;
-             padding: 1rem 2rem;
-             border-radius: 10px;
-             cursor: pointer;
-             font-weight: 500;
-             color: #666;
-             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-             transition: all 0.3s;
-             white-space: nowrap;
-         }
- 
-         .tab-btn.active {
-             background: #2c5aa0;
-             color: white;
-         }
- 
-         .tab-content {
-             background: white;
-             border-radius: 15px;
-             padding: 2rem;
-             box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-         }
- 
-         .tab-pane {
-             display: none;
-         }
- 
-         .tab-pane.active {
-             display: block;
-         }
- 
-         .applications-list {
-             display: grid;
-             gap: 1.5rem;
-         }
- 
-         .application-card {
-             border: 1px solid #eee;
-             border-radius: 10px;
-             padding: 1.5rem;
-             transition: all 0.3s;
-         }
- 
-         .application-card:hover {
-             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-         }
- 
-         .application-header {
-             display: flex;
-             justify-content: space-between;
-             align-items: center;
-             margin-bottom: 1rem;
-         }
- 
-         .status-badge {
-             padding: 5px 15px;
-             border-radius: 20px;
-             font-size: 0.8rem;
-             font-weight: 500;
-         }
- 
-         .status-pending { background: #fff3cd; color: #856404; }
-         .status-reviewed { background: #d1ecf1; color: #0c5460; }
-         .status-interview { background: #d4edda; color: #155724; }
-         .status-accepted { background: #d4edda; color: #155724; }
-         .status-rejected { background: #f8d7da; color: #721c24; }
- 
-         .form-row {
-             display: grid;
-             grid-template-columns: 1fr 1fr;
-             gap: 1rem;
-         }
- 
-         .empty-state {
-             text-align: center;
-             padding: 3rem;
-             color: #666;
-         }
- 
-         .empty-state i {
-             font-size: 3rem;
-             margin-bottom: 1rem;
-             color: #ccc;
-         }
- 
-         @media (max-width: 768px) {
-             .form-row {
-                 grid-template-columns: 1fr;
-             }
-             
-             .stats-cards {
-                 grid-template-columns: 1fr;
-             }
-             
-             .dashboard-tabs {
-                 flex-direction: column;
-             }
-         }
-     </style>
- </body>
- </html>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - JobPortal</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="container">
+                <div class="nav-brand">
+                    <h1><i class="fas fa-briefcase"></i> JobPortal</h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Trang chủ</a></li>
+                    <li><a href="dashboard.html" class="active">Dashboard</a></li>
+                    <li class="auth-buttons">
+                        <div id="logged-in-menu" style="display: block;">
+                            <span id="user-name" class="welcome-text"></span>
+                            <button id="logout-btn" class="btn btn-primary">Đăng xuất</button>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Dashboard Section -->
+    <section class="dashboard-section">
+        <div class="container">
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <h1 id="dashboard-title">Dashboard</h1>
+                <p id="dashboard-subtitle">Quản lý thông tin cá nhân và hoạt động của bạn</p>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div class="dashboard-container">
+                <!-- Sidebar Navigation -->
+                <div class="dashboard-sidebar">
+                    <div class="user-profile">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="user-info">
+                            <h3 id="profile-name">User Name</h3>
+                            <p id="profile-email">user@email.com</p>
+                            <span id="profile-type" class="user-type-badge">Ứng viên</span>
+                        </div>
+                    </div>
+
+                    <nav class="dashboard-nav">
+                        <ul>
+                            <li><a href="#overview" class="nav-item active" data-section="overview">
+                                <i class="fas fa-chart-bar"></i> Tổng quan
+                            </a></li>
+                            
+                            <!-- Candidate Navigation -->
+                            <li class="candidate-only">
+                                <a href="#applications" class="nav-item" data-section="applications">
+                                    <i class="fas fa-file-text"></i> Đơn ứng tuyển
+                                </a>
+                            </li>
+                            <li class="candidate-only">
+                                <a href="#saved-jobs" class="nav-item" data-section="saved-jobs">
+                                    <i class="fas fa-bookmark"></i> Việc làm đã lưu
+                                </a>
+                            </li>
+                            
+                            <!-- Recruiter Navigation -->
+                            <li class="recruiter-only">
+                                <a href="#my-jobs" class="nav-item" data-section="my-jobs">
+                                    <i class="fas fa-briefcase"></i> Tin tuyển dụng
+                                </a>
+                            </li>
+                            <li class="recruiter-only">
+                                <a href="#applicants" class="nav-item" data-section="applicants">
+                                    <i class="fas fa-users"></i> Ứng viên
+                                </a>
+                            </li>
+                            
+                            <!-- Common Navigation -->
+                            <li>
+                                <a href="#profile" class="nav-item" data-section="profile">
+                                    <i class="fas fa-user-edit"></i> Hồ sơ cá nhân
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#settings" class="nav-item" data-section="settings">
+                                    <i class="fas fa-cog"></i> Cài đặt
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+
+                <!-- Main Content -->
+                <div class="dashboard-content">
+                    <!-- Overview Section -->
+                    <div id="overview-section" class="content-section active">
+                        <div class="section-header">
+                            <h2>Tổng quan</h2>
+                            <div class="section-actions recruiter-only">
+                                <a href="post-job.html" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Đăng tin tuyển dụng
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Stats Cards -->
+                        <div class="stats-grid" id="stats-grid">
+                            <!-- Stats will be loaded here -->
+                        </div>
+
+                        <!-- Recent Activity -->
+                        <div class="recent-activity">
+                            <h3>Hoạt động gần đây</h3>
+                            <div id="recent-activity-list" class="activity-list">
+                                <!-- Recent activities will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Applications Section (Candidate) -->
+                    <div id="applications-section" class="content-section candidate-only">
+                        <div class="section-header">
+                            <h2>Đơn ứng tuyển của tôi</h2>
+                            <div class="section-filters">
+                                <select id="application-status-filter">
+                                    <option value="all">Tất cả trạng thái</option>
+                                    <option value="pending">Đang chờ</option>
+                                    <option value="reviewed">Đã xem</option>
+                                    <option value="interview">Phỏng vấn</option>
+                                    <option value="accepted">Được nhận</option>
+                                    <option value="rejected">Bị từ chối</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="applications-list" class="applications-list">
+                            <!-- Applications will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- My Jobs Section (Recruiter) -->
+                    <div id="my-jobs-section" class="content-section recruiter-only">
+                        <div class="section-header">
+                            <h2>Tin tuyển dụng của tôi</h2>
+                            <div class="section-actions">
+                                <a href="post-job.html" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Đăng tin mới
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="jobs-filter-bar">
+                            <select id="job-status-filter">
+                                <option value="all">Tất cả trạng thái</option>
+                                <option value="active">Đang hoạt động</option>
+                                <option value="pending">Chờ duyệt</option>
+                                <option value="expired">Hết hạn</option>
+                                <option value="draft">Nháp</option>
+                            </select>
+                        </div>
+
+                        <div id="my-jobs-list" class="jobs-list">
+                            <!-- Jobs will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Applicants Section (Recruiter) -->
+                    <div id="applicants-section" class="content-section recruiter-only">
+                        <div class="section-header">
+                            <h2>Ứng viên</h2>
+                            <div class="section-filters">
+                                <select id="applicant-job-filter">
+                                    <option value="all">Tất cả tin tuyển dụng</option>
+                                </select>
+                                <select id="applicant-status-filter">
+                                    <option value="all">Tất cả trạng thái</option>
+                                    <option value="pending">Mới ứng tuyển</option>
+                                    <option value="reviewed">Đã xem</option>
+                                    <option value="interview">Mời phỏng vấn</option>
+                                    <option value="accepted">Được nhận</option>
+                                    <option value="rejected">Từ chối</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="applicants-list" class="applicants-list">
+                            <!-- Applicants will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Profile Section -->
+                    <div id="profile-section" class="content-section">
+                        <div class="section-header">
+                            <h2>Hồ sơ cá nhân</h2>
+                            <button id="edit-profile-btn" class="btn btn-outline">
+                                <i class="fas fa-edit"></i> Chỉnh sửa
+                            </button>
+                        </div>
+
+                        <div id="profile-content" class="profile-content">
+                            <!-- Profile form will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Settings Section -->
+                    <div id="settings-section" class="content-section">
+                        <div class="section-header">
+                            <h2>Cài đặt tài khoản</h2>
+                        </div>
+
+                        <div class="settings-content">
+                            <div class="setting-group">
+                                <h3>Thông báo</h3>
+                                <div class="setting-item">
+                                    <label class="setting-label">
+                                        <input type="checkbox" id="email-notifications">
+                                        <span class="checkmark"></span>
+                                        Nhận thông báo qua email
+                                    </label>
+                                </div>
+                                <div class="setting-item">
+                                    <label class="setting-label">
+                                        <input type="checkbox" id="job-alerts">
+                                        <span class="checkmark"></span>
+                                        Thông báo việc làm phù hợp
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="setting-group">
+                                <h3>Bảo mật</h3>
+                                <button class="btn btn-outline">
+                                    <i class="fas fa-key"></i> Đổi mật khẩu
+                                </button>
+                            </div>
+
+                            <div class="setting-group">
+                                <h3>Tài khoản</h3>
+                                <button class="btn btn-danger">
+                                    <i class="fas fa-trash"></i> Xóa tài khoản
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="js/common.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

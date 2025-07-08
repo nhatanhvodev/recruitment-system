@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết công việc - JobPortal</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/job-detail.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="container">
+                <div class="nav-brand">
+                    <h1><i class="fas fa-briefcase"></i> JobPortal</h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Trang chủ</a></li>
+                    <li><a href="index.html#about">Về chúng tôi</a></li>
+                    <li><a href="index.html#contact">Liên hệ</a></li>
+                    <li class="auth-buttons">
+                        <div id="logged-out-menu" style="display: block;">
+                            <a href="login.html" class="btn btn-outline">Đăng nhập</a>
+                            <a href="register.html" class="btn btn-primary">Đăng ký</a>
+                        </div>
+                        <div id="logged-in-menu" style="display: none;">
+                            <span id="user-name" class="welcome-text"></span>
+                            <a href="dashboard.html" class="btn btn-outline">Dashboard</a>
+                            <button id="logout-btn" class="btn btn-primary">Đăng xuất</button>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Job Detail Content -->
+    <section class="job-detail-section">
+        <div class="container">
+            <!-- Loading State -->
+            <div id="loading-state" class="loading-container">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Đang tải thông tin công việc...</p>
+                </div>
+            </div>
+
+            <!-- Job Detail Content -->
+            <div id="job-detail-content" style="display: none;">
+                <!-- Breadcrumb -->
+                <nav class="breadcrumb">
+                    <a href="index.html">Trang chủ</a>
+                    <span>/</span>
+                    <a href="index.html#jobs">Việc làm</a>
+                    <span>/</span>
+                    <span id="job-title-breadcrumb">Chi tiết công việc</span>
+                </nav>
+
+                <!-- Job Header -->
+                <div class="job-header-detail">
+                    <div class="job-main-info">
+                        <div class="company-logo-large">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <div class="job-title-info">
+                            <h1 id="job-title">Loading...</h1>
+                            <div class="company-info">
+                                <h3 id="company-name">Loading...</h3>
+                                <p class="company-website">
+                                    <i class="fas fa-link"></i>
+                                    <a id="company-website" href="#" target="_blank">Website</a>
+                                </p>
+                            </div>
+                            <div class="job-meta-detail">
+                                <span class="job-meta-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span id="job-location">Loading...</span>
+                                </span>
+                                <span class="job-meta-item">
+                                    <i class="fas fa-briefcase"></i>
+                                    <span id="job-type">Loading...</span>
+                                </span>
+                                <span class="job-meta-item">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                    <span id="job-salary">Loading...</span>
+                                </span>
+                                <span class="job-meta-item">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span id="job-posted">Loading...</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="job-actions">
+                        <button id="apply-btn" class="btn btn-primary btn-large">
+                            <i class="fas fa-paper-plane"></i>
+                            Ứng tuyển ngay
+                        </button>
+                        <button id="save-btn" class="btn btn-outline">
+                            <i class="fas fa-bookmark"></i>
+                            Lưu việc làm
+                        </button>
+                        <button id="share-btn" class="btn btn-outline">
+                            <i class="fas fa-share-alt"></i>
+                            Chia sẻ
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Job Stats -->
+                <div class="job-stats">
+                    <div class="stat-item">
+                        <i class="fas fa-eye"></i>
+                        <span>Lượt xem</span>
+                        <strong id="job-views">0</strong>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-users"></i>
+                        <span>Ứng viên</span>
+                        <strong id="job-applications">0</strong>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Hạn nộp</span>
+                        <strong id="job-deadline">Không giới hạn</strong>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="job-content-grid">
+                    <!-- Left Column - Job Details -->
+                    <div class="job-details-content">
+                        <!-- Job Description -->
+                        <div class="content-section">
+                            <h3><i class="fas fa-file-alt"></i> Mô tả công việc</h3>
+                            <div id="job-description" class="content-text">
+                                Loading description...
+                            </div>
+                        </div>
+
+                        <!-- Job Requirements -->
+                        <div class="content-section">
+                            <h3><i class="fas fa-list-check"></i> Yêu cầu công việc</h3>
+                            <div id="job-requirements" class="content-text">
+                                Loading requirements...
+                            </div>
+                        </div>
+
+                        <!-- Benefits -->
+                        <div class="content-section">
+                            <h3><i class="fas fa-gift"></i> Quyền lợi</h3>
+                            <div class="benefits-list">
+                                <div class="benefit-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Lương thưởng cạnh tranh</span>
+                                </div>
+                                <div class="benefit-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Bảo hiểm đầy đủ</span>
+                                </div>
+                                <div class="benefit-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Môi trường làm việc hiện đại</span>
+                                </div>
+                                <div class="benefit-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Cơ hội thăng tiến</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- How to Apply -->
+                        <div class="content-section">
+                            <h3><i class="fas fa-paper-plane"></i> Cách thức ứng tuyển</h3>
+                            <div class="apply-instructions">
+                                <p>Để ứng tuyển vào vị trí này, bạn có thể:</p>
+                                <ol>
+                                    <li>Nhấn nút "Ứng tuyển ngay" phía trên</li>
+                                    <li>Điền thông tin và đính kèm CV</li>
+                                    <li>Viết thư xin việc ngắn gọn</li>
+                                    <li>Gửi đơn ứng tuyển</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column - Company & Additional Info -->
+                    <div class="job-sidebar">
+                        <!-- Company Info -->
+                        <div class="sidebar-section company-section">
+                            <h3><i class="fas fa-building"></i> Thông tin công ty</h3>
+                            <div class="company-details">
+                                <div class="company-logo-sidebar">
+                                    <i class="fas fa-building"></i>
+                                </div>
+                                <h4 id="sidebar-company-name">Loading...</h4>
+                                <p id="company-description">Loading company description...</p>
+                                
+                                <div class="company-stats">
+                                    <div class="company-stat">
+                                        <span class="stat-label">Quy mô:</span>
+                                        <span id="company-size">Loading...</span>
+                                    </div>
+                                    <div class="company-stat">
+                                        <span class="stat-label">Lĩnh vực:</span>
+                                        <span id="company-industry">Loading...</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="company-actions">
+                                    <a id="company-website-link" href="#" target="_blank" class="btn btn-outline btn-sm">
+                                        <i class="fas fa-external-link-alt"></i>
+                                        Xem website
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Job Details Summary -->
+                        <div class="sidebar-section">
+                            <h3><i class="fas fa-info-circle"></i> Thông tin chi tiết</h3>
+                            <div class="job-details-list">
+                                <div class="detail-item">
+                                    <span class="detail-label">Mức lương:</span>
+                                    <span id="sidebar-salary" class="detail-value">Loading...</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Hình thức:</span>
+                                    <span id="sidebar-job-type" class="detail-value">Loading...</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Địa điểm:</span>
+                                    <span id="sidebar-location" class="detail-value">Loading...</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Ngày đăng:</span>
+                                    <span id="sidebar-posted" class="detail-value">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Related Jobs -->
+                        <div class="sidebar-section">
+                            <h3><i class="fas fa-briefcase"></i> Việc làm liên quan</h3>
+                            <div id="related-jobs" class="related-jobs-list">
+                                <div class="loading">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <p>Đang tải...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error State -->
+            <div id="error-state" class="error-container" style="display: none;">
+                <div class="error-content">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h2>Không tìm thấy công việc</h2>
+                    <p>Công việc bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.</p>
+                    <a href="index.html" class="btn btn-primary">Về trang chủ</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="fas fa-briefcase"></i> JobPortal</h3>
+                    <p>Nền tảng tuyển dụng hàng đầu Việt Nam, kết nối nhà tuyển dụng và ứng viên.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Dành cho ứng viên</h4>
+                    <ul>
+                        <li><a href="#">Tìm việc làm</a></li>
+                        <li><a href="#">Tạo CV</a></li>
+                        <li><a href="#">Hướng dẫn ứng tuyển</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Dành cho nhà tuyển dụng</h4>
+                    <ul>
+                        <li><a href="#">Đăng tin tuyển dụng</a></li>
+                        <li><a href="#">Tìm ứng viên</a></li>
+                        <li><a href="#">Quản lý tuyển dụng</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Liên hệ</h4>
+                    <p><i class="fas fa-envelope"></i> contact@jobportal.vn</p>
+                    <p><i class="fas fa-phone"></i> (84) 123 456 789</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 JobPortal. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/common.js"></script>
+    <script src="js/job-detail.js"></script>
+</body>
+</html>

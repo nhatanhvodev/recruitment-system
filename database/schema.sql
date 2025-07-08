@@ -1,6 +1,6 @@
 -- Database Schema for Recruitment System
 -- Create database
-CREATE DATABASE recruitment_system;
+CREATE DATABASE IF NOT EXISTS recruitment_system;
 USE recruitment_system;
 
 -- User table (base table for all user types)

@@ -18,10 +18,10 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
     $job_type = isset($_GET['job_type']) ? $_GET['job_type'] : '';
     $offset = ($page - 1) * $limit;
     
-    if(isset($_GET['job_id'])) {
+    if(isset($_GET['job_id']) || isset($_GET['id'])) {
         // Get single job
-        $job->job_id = $_GET['job_id'];
-        $job_data = $job->readone();
+        $job->job_id = $_GET['job_id'] ?? $_GET['id'];
+        $job_data = $job->readOne();
         
         if($job_data) {
             // Increment view count

@@ -132,10 +132,12 @@ async function logout() {
     updateAuthUI(null);
     showAlert('Đăng xuất thành công', 'success');
     
-    // Redirect to home page
-    if (window.location.pathname !== '/index.html' && window.location.pathname !== '/') {
-        window.location.href = 'index.html';
-    }
+    // Always redirect to home page using relative path that works from anywhere
+    setTimeout(() => {
+        // Get the base URL and redirect to home page
+        const baseUrl = window.location.origin + window.location.pathname.split('/public/')[0] + '/public/';
+        window.location.href = baseUrl + 'index.html';
+    }, 1500);
     
     return result;
 }
@@ -206,7 +208,7 @@ async function getJobs(page = 1, filters = {}) {
 }
 
 async function getJob(jobId) {
-    return await apiCall(API_BASE + 'jobs.php?job_id=' + jobId);
+    return await apiCall(API_BASE + 'jobs.php?id=' + jobId);
 }
 
 async function applyForJob(jobId, coverLetter = '') {

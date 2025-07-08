@@ -271,51 +271,7 @@ function showApplicationModal(jobId) {
         </div>
     `;
     
-    // Add modal styles if not exists
-    if (!document.getElementById('modal-styles')) {
-        const styles = document.createElement('style');
-        styles.id = 'modal-styles';
-        styles.textContent = `
-            .modal-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.5);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 10000;
-            }
-            .modal-content {
-                background: white;
-                border-radius: 15px;
-                max-width: 500px;
-                width: 90%;
-                max-height: 90vh;
-                overflow-y: auto;
-            }
-            .modal-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 1.5rem;
-                border-bottom: 1px solid #eee;
-            }
-            .modal-close {
-                background: none;
-                border: none;
-                font-size: 1.5rem;
-                cursor: pointer;
-                color: #666;
-            }
-            .modal-body {
-                padding: 1.5rem;
-            }
-        `;
-        document.head.appendChild(styles);
-    }
+    // Modal styles are now in style.css
     
     // Add modal to page
     document.body.insertAdjacentHTML('beforeend', modalHTML);

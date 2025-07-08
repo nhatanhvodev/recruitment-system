@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng tin tuyển dụng - JobPortal</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/post-job.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="container">
+                <div class="nav-brand">
+                    <h1><i class="fas fa-briefcase"></i> JobPortal</h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Trang chủ</a></li>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li class="auth-buttons">
+                        <div id="logged-out-menu" style="display: none;">
+                            <a href="login.html" class="btn btn-outline">Đăng nhập</a>
+                            <a href="register.html" class="btn btn-primary">Đăng ký</a>
+                        </div>
+                        <div id="logged-in-menu" style="display: block;">
+                            <span id="user-name" class="welcome-text"></span>
+                            <a href="dashboard.html" class="btn btn-outline">Dashboard</a>
+                            <button id="logout-btn" class="btn btn-primary">Đăng xuất</button>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Post Job Section -->
+    <section class="post-job-section">
+        <div class="container">
+            <div class="page-header">
+                <nav class="breadcrumb">
+                    <a href="index.html">Trang chủ</a>
+                    <span>/</span>
+                    <a href="dashboard.html">Dashboard</a>
+                    <span>/</span>
+                    <span>Đăng tin tuyển dụng</span>
+                </nav>
+                <h1><i class="fas fa-plus-circle"></i> Đăng tin tuyển dụng</h1>
+                <p>Tạo và đăng tải thông tin tuyển dụng để tìm kiếm ứng viên phù hợp</p>
+            </div>
+
+            <div class="post-job-container">
+                <div class="post-job-content">
+                    <!-- Job Posting Form -->
+                    <form id="post-job-form" class="job-form">
+                        <!-- Basic Information -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-info-circle"></i> Thông tin cơ bản</h3>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="job-title">Tiêu đề công việc *</label>
+                                    <input type="text" id="job-title" name="title" required 
+                                           placeholder="VD: Senior Frontend Developer">
+                                    <span class="form-hint">Tiêu đề ngắn gọn, thu hút ứng viên</span>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="job-type">Loại công việc *</label>
+                                    <select id="job-type" name="job_type" required>
+                                        <option value="">Chọn loại công việc</option>
+                                        <option value="full-time">Toàn thời gian</option>
+                                        <option value="part-time">Bán thời gian</option>
+                                        <option value="contract">Hợp đồng</option>
+                                        <option value="internship">Thực tập</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="job-location">Địa điểm làm việc *</label>
+                                    <input type="text" id="job-location" name="location" required 
+                                           placeholder="VD: Hà Nội, TP.HCM, Remote">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="job-salary">Mức lương</label>
+                                    <input type="number" id="job-salary" name="salary" 
+                                           placeholder="VD: 15000000" min="0">
+                                    <span class="form-hint">Đơn vị: VNĐ (để trống nếu thỏa thuận)</span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="job-expires">Hạn nộp hồ sơ</label>
+                                    <input type="date" id="job-expires" name="expires_at">
+                                    <span class="form-hint">Để trống nếu không giới hạn</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Job Description -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-file-alt"></i> Mô tả công việc</h3>
+                            
+                            <div class="form-group">
+                                <label for="job-description">Mô tả chi tiết *</label>
+                                <div class="editor-toolbar">
+                                    <button type="button" class="editor-btn" data-action="bold" title="In đậm">
+                                        <i class="fas fa-bold"></i>
+                                    </button>
+                                    <button type="button" class="editor-btn" data-action="italic" title="In nghiêng">
+                                        <i class="fas fa-italic"></i>
+                                    </button>
+                                    <button type="button" class="editor-btn" data-action="list" title="Danh sách">
+                                        <i class="fas fa-list-ul"></i>
+                                    </button>
+                                </div>
+                                <textarea id="job-description" name="description" rows="6" required
+                                          placeholder="Mô tả chi tiết về công việc, trách nhiệm, môi trường làm việc...&#10;&#10;VD:&#10;- Phát triển ứng dụng web frontend sử dụng React.js&#10;- Tối ưu hóa hiệu suất ứng dụng&#10;- Làm việc nhóm với team Backend và Designer&#10;- Tham gia code review và meeting dự án"></textarea>
+                                <div class="char-count">
+                                    <span id="desc-count">0</span>/2000 ký tự
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="job-requirements">Yêu cầu ứng viên *</label>
+                                <textarea id="job-requirements" name="requirements" rows="5" required
+                                          placeholder="Liệt kê các yêu cầu về kinh nghiệm, kỹ năng, bằng cấp...&#10;&#10;VD:&#10;- Tốt nghiệp Đại học chuyên ngành IT&#10;- 2+ năm kinh nghiệm React.js&#10;- Thành thạo HTML, CSS, JavaScript&#10;- Có kinh nghiệm Git, Agile là một lợi thế&#10;- Kỹ năng giao tiếp tốt, làm việc nhóm"></textarea>
+                                <div class="char-count">
+                                    <span id="req-count">0</span>/1500 ký tự
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Benefits & Perks -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-gift"></i> Quyền lợi & Phúc lợi</h3>
+                            
+                            <div class="benefits-section">
+                                <div class="benefits-grid">
+                                    <div class="benefit-item">
+                                        <input type="checkbox" id="benefit-salary" name="benefits[]" value="competitive-salary">
+                                        <label for="benefit-salary">
+                                            <i class="fas fa-money-bill-wave"></i>
+                                            Lương cạnh tranh
+                                        </label>
+                                    </div>
+                                    <div class="benefit-item">
+                                        <input type="checkbox" id="benefit-insurance" name="benefits[]" value="health-insurance">
+                                        <label for="benefit-insurance">
+                                            <i class="fas fa-shield-alt"></i>
+                                            Bảo hiểm y tế
+                                        </label>
+                                    </div>
+                                    <div class="benefit-item">
+                                        <input type="checkbox" id="benefit-bonus" name="benefits[]" value="performance-bonus">
+                                        <label for="benefit-bonus">
+                                            <i class="fas fa-trophy"></i>
+                                            Thưởng hiệu suất
+                                        </label>
+                                    </div>
+                                    <div class="benefit-item">
+                                        <input type="checkbox" id="benefit-training" name="benefits[]" value="training">
+                                        <label for="benefit-training">
+                                            <i class="fas fa-graduation-cap"></i>
+                                            Đào tạo & phát triển
+                                        </label>
+                                    </div>
+                                    <div class="benefit-item">
+                                        <input type="checkbox" id="benefit-flexible" name="benefits[]" value="flexible-time">
+                                        <label for="benefit-flexible">
+                                            <i class="fas fa-clock"></i>
+                                            Giờ làm linh hoạt
+                                        </label>
+                                    </div>
+                                    <div class="benefit-item">
+                                        <input type="checkbox" id="benefit-remote" name="benefits[]" value="remote-work">
+                                        <label for="benefit-remote">
+                                            <i class="fas fa-home"></i>
+                                            Làm việc từ xa
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="additional-benefits">Quyền lợi khác</label>
+                                    <textarea id="additional-benefits" name="additional_benefits" rows="3"
+                                              placeholder="Mô tả thêm các quyền lợi, phúc lợi khác...&#10;VD: Du lịch hàng năm, team building, cafeteria miễn phí..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Information -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-envelope"></i> Thông tin liên hệ</h3>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="contact-person">Người liên hệ</label>
+                                    <input type="text" id="contact-person" name="contact_person" 
+                                           placeholder="VD: Nguyễn Văn A - HR Manager">
+                                </div>
+                                <div class="form-group">
+                                    <label for="contact-email">Email liên hệ</label>
+                                    <input type="email" id="contact-email" name="contact_email" 
+                                           placeholder="VD: hr@company.com">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="contact-phone">Số điện thoại</label>
+                                    <input type="tel" id="contact-phone" name="contact_phone" 
+                                           placeholder="VD: 0123456789">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="form-actions">
+                            <button type="button" id="preview-btn" class="btn btn-outline">
+                                <i class="fas fa-eye"></i> Xem trước
+                            </button>
+                            <button type="button" id="save-draft-btn" class="btn btn-secondary">
+                                <i class="fas fa-save"></i> Lưu nháp
+                            </button>
+                            <button type="submit" id="submit-btn" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Đăng tin tuyển dụng
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Sidebar Tips -->
+                <div class="post-job-sidebar">
+                    <div class="tips-section">
+                        <h4><i class="fas fa-lightbulb"></i> Gợi ý viết tin tuyển dụng</h4>
+                        <div class="tip-item">
+                            <h5>Tiêu đề hấp dẫn</h5>
+                            <p>Sử dụng từ khóa rõ ràng, tránh viết tắt khó hiểu</p>
+                        </div>
+                        <div class="tip-item">
+                            <h5>Mô tả chi tiết</h5>
+                            <p>Nêu rõ trách nhiệm, môi trường làm việc và cơ hội phát triển</p>
+                        </div>
+                        <div class="tip-item">
+                            <h5>Yêu cầu thực tế</h5>
+                            <p>Đặt ra yêu cầu phù hợp với mức lương và vị trí</p>
+                        </div>
+                        <div class="tip-item">
+                            <h5>Quyền lợi rõ ràng</h5>
+                            <p>Liệt kê cụ thể các phúc lợi để thu hút ứng viên</p>
+                        </div>
+                    </div>
+
+                    <div class="pricing-section">
+                        <h4><i class="fas fa-tags"></i> Gói đăng tin</h4>
+                        <div class="pricing-item active">
+                            <div class="price-header">
+                                <h5>Gói cơ bản</h5>
+                                <span class="price">Miễn phí</span>
+                            </div>
+                            <ul class="price-features">
+                                <li><i class="fas fa-check"></i> Đăng 5 tin/tháng</li>
+                                <li><i class="fas fa-check"></i> Hiển thị 30 ngày</li>
+                                <li><i class="fas fa-check"></i> Hỗ trợ cơ bản</li>
+                            </ul>
+                        </div>
+                        <div class="pricing-item">
+                            <div class="price-header">
+                                <h5>Gói premium</h5>
+                                <span class="price">500,000đ/tháng</span>
+                            </div>
+                            <ul class="price-features">
+                                <li><i class="fas fa-check"></i> Đăng không giới hạn</li>
+                                <li><i class="fas fa-check"></i> Ưu tiên hiển thị</li>
+                                <li><i class="fas fa-check"></i> Hỗ trợ 24/7</li>
+                                <li><i class="fas fa-check"></i> Báo cáo chi tiết</li>
+                            </ul>
+                            <button class="btn btn-primary btn-sm upgrade-btn">Nâng cấp</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Job Preview Modal -->
+    <div id="job-preview-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content job-preview-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-eye"></i> Xem trước tin tuyển dụng</h3>
+                <button class="modal-close" onclick="closeJobPreview()">×</button>
+            </div>
+            <div class="modal-body">
+                <div id="job-preview-content">
+                    <!-- Preview content will be generated here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeJobPreview()">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="submitJobFromPreview()">Đăng tin</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/post-job.js"></script>
+</body>
+</html>
