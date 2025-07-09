@@ -18,7 +18,66 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
     $job_type = isset($_GET['job_type']) ? $_GET['job_type'] : '';
     $offset = ($page - 1) * $limit;
     
-    if(isset($_GET['job_id']) || isset($_GET['id'])) {
+    if(isset($_GET['recruiter_jobs'])) {
+        // Get jobs for current recruiter
+        if(!in_array($_SESSION['user_type'], ['recruiter', 'admin'])) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Không có quyền truy cập'
+            ]);
+            exit;
+        }
+        
+        $user_id = $_SESSION['user_id'];
+        
+        // Get recruiter's company
+        $query = "SELECT company_id FROM recruiters WHERE user_id = :user_id";
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(':user_id', $user_id);
+        $stmt->execute();
+        
+        if($stmt->rowCount() > 0) {
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $company_id = $row['company_id'];
+            
+            if ($company_id) {
+                // Get all jobs for this company
+                $query = "SELECT j.*, c.name as company_name, 
+                                 (SELECT COUNT(*) FROM applications a WHERE a.job_id = j.job_id) as application_count
+                          FROM jobs j
+                          JOIN companies c ON j.company_id = c.company_id
+                          WHERE j.company_id = :company_id
+                          ORDER BY j.posted_at DESC";
+                
+                $stmt = $db->prepare($query);
+                $stmt->bindParam(':company_id', $company_id);
+                $stmt->execute();
+                
+                $jobs = [];
+                while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                    $jobs[] = $row;
+                }
+                
+                echo json_encode([
+                    'success' => true,
+                    'data' => $jobs
+                ]);
+            } else {
+                // Recruiter hasn't been assigned to a company yet
+                echo json_encode([
+                    'success' => true,
+                    'data' => [],
+                    'message' => 'Chưa được gán vào công ty nào. Vui lòng liên hệ admin để cập nhật thông tin công ty.'
+                ]);
+            }
+        } else {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Không tìm thấy thông tin recruiter'
+            ]);
+        }
+        
+    } elseif(isset($_GET['job_id']) || isset($_GET['id'])) {
         // Get single job
         $job->job_id = $_GET['job_id'] ?? $_GET['id'];
         $job_data = $job->readOne();
@@ -69,8 +128,34 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
     
     $data = json_decode(file_get_contents("php://input"));
     
-    if(isset($data->title) && isset($data->description) && isset($data->company_id)) {
-        $job->company_id = $data->company_id;
+    // Get recruiter's company_id
+    $user_id = $_SESSION['user_id'];
+    $query = "SELECT company_id FROM recruiters WHERE user_id = :user_id";
+    $stmt = $db->prepare($query);
+    $stmt->bindParam(':user_id', $user_id);
+    $stmt->execute();
+    
+    if($stmt->rowCount() > 0) {
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $company_id = $row['company_id'];
+        
+        if (!$company_id) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Bạn chưa được gán vào công ty nào. Vui lòng liên hệ admin để cập nhật thông tin công ty.'
+            ]);
+            exit;
+        }
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Không tìm thấy thông tin recruiter'
+        ]);
+        exit;
+    }
+    
+    if(isset($data->title) && isset($data->description)) {
+        $job->company_id = $company_id;  // Use recruiter's company_id
         $job->title = $data->title;
         $job->description = $data->description;
         $job->requirements = $data->requirements ?? '';

@@ -49,15 +49,7 @@
                 <input type="password" id="confirm-password" name="confirm_password" required>
             </div>
             
-            <div id="company-fields" style="display: none;">
-                <div class="form-group">
-                    <label for="company-id">Công ty:</label>
-                    <select id="company-id" name="company_id">
-                        <option value="">Chọn công ty</option>
-                        <!-- Will be populated by JavaScript -->
-                    </select>
-                </div>
-                
+            <div id="recruiter-fields" style="display: none;">
                 <div class="form-group">
                     <label for="position">Chức vụ:</label>
                     <input type="text" id="position" name="position" placeholder="VD: HR Manager, Recruiter">
@@ -79,37 +71,16 @@
 
     <script src="js/common.js"></script>
     <script>
-        // Show/hide company fields based on user type
+        // Show/hide recruiter fields based on user type
         document.getElementById('user-type').addEventListener('change', function() {
-            const companyFields = document.getElementById('company-fields');
-            const companySelect = document.getElementById('company-id');
+            const recruiterFields = document.getElementById('recruiter-fields');
             
             if (this.value === 'recruiter') {
-                companyFields.style.display = 'block';
-                companySelect.required = true;
-                loadCompanies();
+                recruiterFields.style.display = 'block';
             } else {
-                companyFields.style.display = 'none';
-                companySelect.required = false;
+                recruiterFields.style.display = 'none';
             }
         });
-        
-        // Load companies for recruiter registration
-        async function loadCompanies() {
-            try {
-                const result = await RecruitmentApp.apiCall('../api/companies.php');
-                if (result.success) {
-                    const companySelect = document.getElementById('company-id');
-                    companySelect.innerHTML = '<option value="">Chọn công ty</option>';
-                    
-                    result.data.forEach(company => {
-                        companySelect.innerHTML += `<option value="${company.company_id}">${company.name}</option>`;
-                    });
-                }
-            } catch (error) {
-                console.error('Error loading companies:', error);
-            }
-        }
         
         // Handle form submission
         document.getElementById('register-form').addEventListener('submit', async function(e) {

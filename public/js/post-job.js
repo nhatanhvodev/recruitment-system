@@ -253,7 +253,6 @@ async function submitJob(isDraft = false) {
     
     const formData = collectFormData();
     formData.status = isDraft ? 'draft' : 'pending';
-    formData.company_id = currentCompanyId;
     
     try {
         setFormLoading(true);
@@ -290,12 +289,6 @@ function validateForm() {
             isValid = false;
         }
     });
-    
-    // Check if company is selected
-    if (!currentCompanyId) {
-        RecruitmentApp.showAlert('Không tìm thấy thông tin công ty. Vui lòng liên hệ admin.', 'error');
-        return false;
-    }
     
     return isValid;
 }

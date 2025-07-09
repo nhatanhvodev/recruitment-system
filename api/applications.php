@@ -122,6 +122,72 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             ]);
         }
         
+    } elseif(isset($_GET['recruiter_applications'])) {
+        // Get all applications for recruiter's jobs
+        if(!in_array($_SESSION['user_type'], ['recruiter', 'admin'])) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Không có quyền truy cập'
+            ]);
+            exit;
+        }
+        
+        $user_id = $_SESSION['user_id'];
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 100;
+        
+        // Get recruiter's company
+        $query = "SELECT company_id FROM recruiters WHERE user_id = :user_id";
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(':user_id', $user_id);
+        $stmt->execute();
+        
+        if($stmt->rowCount() > 0) {
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $company_id = $row['company_id'];
+            
+            if ($company_id) {
+                // Get applications for all jobs of this company
+                $query = "SELECT a.*, j.title as job_title, j.location as job_location, j.salary,
+                                 u.full_name as candidate_name, u.email as candidate_email, u.phone as candidate_phone,
+                                 c.name as company_name
+                          FROM applications a
+                          JOIN jobs j ON a.job_id = j.job_id
+                          JOIN candidates cd ON a.candidate_id = cd.candidate_id
+                          JOIN users u ON cd.user_id = u.user_id
+                          JOIN companies c ON j.company_id = c.company_id
+                          WHERE j.company_id = :company_id
+                          ORDER BY a.applied_at DESC
+                          LIMIT :limit";
+                
+                $stmt = $db->prepare($query);
+                $stmt->bindParam(':company_id', $company_id);
+                $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+                $stmt->execute();
+                
+                $applications = [];
+                while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                    $applications[] = $row;
+                }
+                
+                echo json_encode([
+                    'success' => true,
+                    'data' => $applications
+                ]);
+            } else {
+                // Recruiter hasn't been assigned to a company yet
+                echo json_encode([
+                    'success' => true,
+                    'data' => [],
+                    'message' => 'Chưa được gán vào công ty nào. Vui lòng liên hệ admin để cập nhật thông tin công ty.'
+                ]);
+            }
+        } else {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Không tìm thấy thông tin recruiter'
+            ]);
+        }
+        
     } elseif(isset($_GET['job_id'])) {
         // Get applications for a job (for recruiters)
         if(!in_array($_SESSION['user_type'], ['recruiter', 'admin'])) {

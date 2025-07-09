@@ -33,15 +33,12 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $stmt->bindParam(':user_id', $user_id);
                     $stmt->execute();
                 } elseif($data->user_type == 'recruiter') {
-                    // For recruiter, we need company_id which should be provided
-                    if(isset($data->company_id)) {
-                        $query = "INSERT INTO recruiters (user_id, company_id, position) VALUES (:user_id, :company_id, :position)";
-                        $stmt = $db->prepare($query);
-                        $stmt->bindParam(':user_id', $user_id);
-                        $stmt->bindParam(':company_id', $data->company_id);
-                        $stmt->bindParam(':position', $data->position ?? '');
-                        $stmt->execute();
-                    }
+                    // Create recruiter record without company (can be updated later)
+                    $query = "INSERT INTO recruiters (user_id, company_id, position) VALUES (:user_id, NULL, :position)";
+                    $stmt = $db->prepare($query);
+                    $stmt->bindParam(':user_id', $user_id);
+                    $stmt->bindParam(':position', $data->position ?? '');
+                    $stmt->execute();
                 }
                 
                 echo json_encode([

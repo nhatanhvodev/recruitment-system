@@ -42,10 +42,10 @@ CREATE TABLE companies (
 CREATE TABLE recruiters (
     recruiter_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
-    company_id INT NOT NULL,
+    company_id INT,
     position VARCHAR(100),
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (company_id) REFERENCES companies(company_id) ON DELETE CASCADE
+    FOREIGN KEY (company_id) REFERENCES companies(company_id) ON DELETE SET NULL
 );
 
 -- Job table

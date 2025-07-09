@@ -538,9 +538,197 @@ function renderJobs(jobs) {
 }
 
 async function loadApplicantsData() {
-    // Implementation for loading applicants data
     const applicantsList = document.getElementById('applicants-list');
-    applicantsList.innerHTML = '<div class="loading-placeholder"><i class="fas fa-spinner"></i><p>Chức năng đang phát triển...</p></div>';
+    const jobFilter = document.getElementById('applicant-job-filter');
+    const statusFilter = document.getElementById('applicant-status-filter');
+    
+    try {
+        applicantsList.innerHTML = '<div class="loading-placeholder"><i class="fas fa-spinner"></i><p>Đang tải ứng viên...</p></div>';
+        
+        // Load recruiter's jobs first to populate job filter
+        const jobsResult = await RecruitmentApp.apiCall('../api/jobs.php?recruiter_jobs=1');
+        if (jobsResult.success && jobsResult.data.length > 0) {
+            // Populate job filter
+            jobFilter.innerHTML = '<option value="all">Tất cả tin tuyển dụng</option>' + 
+                jobsResult.data.map(job => 
+                    `<option value="${job.job_id}">${job.title}</option>`
+                ).join('');
+        }
+        
+        // Load all applications for recruiter
+        const result = await RecruitmentApp.apiCall('../api/applications.php?recruiter_applications=1');
+        
+        if (result.success && result.data.length > 0) {
+            renderApplicants(result.data);
+            
+            // Setup filters
+            const applyFilters = () => {
+                const jobFilterValue = jobFilter.value;
+                const statusFilterValue = statusFilter.value;
+                
+                let filteredData = result.data;
+                
+                if (jobFilterValue !== 'all') {
+                    filteredData = filteredData.filter(app => app.job_id == jobFilterValue);
+                }
+                
+                if (statusFilterValue !== 'all') {
+                    filteredData = filteredData.filter(app => app.status === statusFilterValue);
+                }
+                
+                renderApplicants(filteredData);
+            };
+            
+            jobFilter.addEventListener('change', applyFilters);
+            statusFilter.addEventListener('change', applyFilters);
+        } else {
+            applicantsList.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-users"></i>
+                    <h3>Chưa có ứng viên nào</h3>
+                    <p>Khi có người ứng tuyển vào tin tuyển dụng của bạn, họ sẽ xuất hiện ở đây</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error loading applicants:', error);
+        applicantsList.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>Có lỗi xảy ra</h3></div>';
+    }
+}
+
+function renderApplicants(applicants) {
+    const applicantsList = document.getElementById('applicants-list');
+    
+    if (applicants.length === 0) {
+        applicantsList.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-search"></i>
+                <h3>Không tìm thấy ứng viên</h3>
+                <p>Thử thay đổi bộ lọc</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const html = applicants.map(applicant => {
+        const statusClass = `status-${applicant.status}`;
+        const statusText = {
+            'pending': 'Mới ứng tuyển',
+            'reviewed': 'Đã xem',
+            'interview': 'Mời phỏng vấn',
+            'accepted': 'Được nhận',
+            'rejected': 'Từ chối'
+        }[applicant.status] || applicant.status;
+        
+        const statusIcon = {
+            'pending': 'fas fa-clock',
+            'reviewed': 'fas fa-eye',
+            'interview': 'fas fa-calendar-check',
+            'accepted': 'fas fa-check-circle',
+            'rejected': 'fas fa-times-circle'
+        }[applicant.status] || 'fas fa-info-circle';
+        
+        return `
+            <div class="applicant-item">
+                <div class="applicant-header">
+                    <div class="applicant-info">
+                        <div class="applicant-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="applicant-details">
+                            <h3 class="applicant-name">${applicant.candidate_name}</h3>
+                            <p class="applicant-email">${applicant.candidate_email}</p>
+                            ${applicant.candidate_phone ? `<p class="applicant-phone"><i class="fas fa-phone"></i> ${applicant.candidate_phone}</p>` : ''}
+                        </div>
+                    </div>
+                    <span class="applicant-status ${statusClass}">
+                        <i class="${statusIcon}"></i>
+                        ${statusText}
+                    </span>
+                </div>
+                
+                <div class="applicant-job-info">
+                    <h4><i class="fas fa-briefcase"></i> ${applicant.job_title}</h4>
+                    <div class="job-meta">
+                        <span><i class="fas fa-map-marker-alt"></i> ${applicant.job_location}</span>
+                        ${applicant.salary ? `<span><i class="fas fa-money-bill"></i> ${RecruitmentApp.formatCurrency(applicant.salary)}</span>` : ''}
+                        <span><i class="fas fa-calendar"></i> Ứng tuyển: ${RecruitmentApp.formatDate(applicant.applied_at)}</span>
+                    </div>
+                </div>
+                
+                ${applicant.cover_letter ? `
+                <div class="applicant-cover-letter">
+                    <h5><i class="fas fa-file-text"></i> Thư xin việc:</h5>
+                    <div class="cover-letter-content">
+                        ${applicant.cover_letter.length > 200 
+                            ? applicant.cover_letter.substring(0, 200) + '...'
+                            : applicant.cover_letter}
+                    </div>
+                    ${applicant.cover_letter.length > 200 ? `
+                        <button class="btn-link" onclick="expandCoverLetter(${applicant.application_id})">
+                            Xem thêm
+                        </button>
+                    ` : ''}
+                </div>
+                ` : ''}
+                
+                <div class="applicant-actions">
+                    <div class="action-buttons">
+                        ${applicant.status === 'pending' ? `
+                            <button class="btn btn-primary btn-sm" onclick="updateApplicationStatus(${applicant.application_id}, 'reviewed')">
+                                <i class="fas fa-eye"></i> Đánh dấu đã xem
+                            </button>
+                        ` : ''}
+                        
+                        ${['pending', 'reviewed'].includes(applicant.status) ? `
+                            <button class="btn btn-success btn-sm" onclick="updateApplicationStatus(${applicant.application_id}, 'interview')">
+                                <i class="fas fa-calendar-check"></i> Mời phỏng vấn
+                            </button>
+                            <button class="btn btn-outline btn-sm" onclick="updateApplicationStatus(${applicant.application_id}, 'accepted')">
+                                <i class="fas fa-check"></i> Nhận việc
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="updateApplicationStatus(${applicant.application_id}, 'rejected')">
+                                <i class="fas fa-times"></i> Từ chối
+                            </button>
+                        ` : ''}
+                        
+                        ${applicant.status === 'interview' ? `
+                            <button class="btn btn-outline btn-sm" onclick="updateApplicationStatus(${applicant.application_id}, 'accepted')">
+                                <i class="fas fa-check"></i> Nhận việc
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="updateApplicationStatus(${applicant.application_id}, 'rejected')">
+                                <i class="fas fa-times"></i> Từ chối
+                            </button>
+                        ` : ''}
+                        
+                        <button class="btn btn-outline btn-sm" onclick="contactApplicant('${applicant.candidate_email}', '${applicant.candidate_name}')">
+                            <i class="fas fa-envelope"></i> Liên hệ
+                        </button>
+                    </div>
+                    
+                    <div class="applicant-notes">
+                        <button class="btn btn-link btn-sm" onclick="toggleApplicantNotes(${applicant.application_id})">
+                            <i class="fas fa-sticky-note"></i> Ghi chú
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="notes-${applicant.application_id}" class="applicant-notes-section" style="display: none;">
+                    <textarea placeholder="Thêm ghi chú về ứng viên..." rows="3"></textarea>
+                    <div class="notes-actions">
+                        <button class="btn btn-primary btn-sm" onclick="saveApplicantNotes(${applicant.application_id})">
+                            <i class="fas fa-save"></i> Lưu ghi chú
+                        </button>
+                        <button class="btn btn-outline btn-sm" onclick="toggleApplicantNotes(${applicant.application_id})">
+                            Hủy
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    applicantsList.innerHTML = html;
 }
 
 async function loadProfileData() {
@@ -688,9 +876,97 @@ async function updateProfile() {
     }
 }
 
+// Applicant management functions
+async function updateApplicationStatus(applicationId, newStatus) {
+    const statusText = {
+        'reviewed': 'đã xem',
+        'interview': 'mời phỏng vấn',
+        'accepted': 'nhận việc',
+        'rejected': 'từ chối'
+    }[newStatus] || newStatus;
+    
+    if (!confirm(`Bạn có chắc muốn ${statusText} ứng viên này?`)) return;
+    
+    try {
+        const result = await RecruitmentApp.apiCall('../api/applications.php', {
+            method: 'PUT',
+            body: JSON.stringify({
+                application_id: applicationId,
+                status: newStatus
+            })
+        });
+        
+        if (result.success) {
+            RecruitmentApp.showAlert(`Đã cập nhật trạng thái: ${statusText}`, 'success');
+            loadApplicantsData(); // Reload the list
+        } else {
+            RecruitmentApp.showAlert(result.message || 'Có lỗi xảy ra', 'error');
+        }
+    } catch (error) {
+        console.error('Error updating application status:', error);
+        RecruitmentApp.showAlert('Có lỗi xảy ra khi cập nhật trạng thái', 'error');
+    }
+}
+
+function contactApplicant(email, name) {
+    const subject = encodeURIComponent(`Phản hồi đơn ứng tuyển - ${name}`);
+    const body = encodeURIComponent(`Xin chào ${name},\n\nCảm ơn bạn đã ứng tuyển vào công ty chúng tôi. `);
+    
+    window.open(`mailto:${email}?subject=${subject}&body=${body}`, '_blank');
+}
+
+function expandCoverLetter(applicationId) {
+    // Find the applicant item and expand the cover letter
+    const applicantItem = document.querySelector(`[onclick="expandCoverLetter(${applicationId})"]`);
+    if (applicantItem) {
+        const coverLetterContent = applicantItem.closest('.applicant-cover-letter').querySelector('.cover-letter-content');
+        const fullText = coverLetterContent.dataset.fullText;
+        
+        if (fullText) {
+            coverLetterContent.innerHTML = fullText;
+            applicantItem.style.display = 'none';
+        }
+    }
+}
+
+function toggleApplicantNotes(applicationId) {
+    const notesSection = document.getElementById(`notes-${applicationId}`);
+    if (notesSection) {
+        notesSection.style.display = notesSection.style.display === 'none' ? 'block' : 'none';
+    }
+}
+
+async function saveApplicantNotes(applicationId) {
+    const notesSection = document.getElementById(`notes-${applicationId}`);
+    const textarea = notesSection.querySelector('textarea');
+    const notes = textarea.value.trim();
+    
+    if (!notes) {
+        RecruitmentApp.showAlert('Vui lòng nhập ghi chú', 'warning');
+        return;
+    }
+    
+    try {
+        // For now, just save to localStorage (can be enhanced to save to backend)
+        const notesKey = `applicant_notes_${applicationId}`;
+        localStorage.setItem(notesKey, notes);
+        
+        RecruitmentApp.showAlert('Đã lưu ghi chú', 'success');
+        toggleApplicantNotes(applicationId);
+    } catch (error) {
+        console.error('Error saving notes:', error);
+        RecruitmentApp.showAlert('Có lỗi xảy ra khi lưu ghi chú', 'error');
+    }
+}
+
 // Global functions
 window.withdrawApplication = withdrawApplication;
 window.editJob = editJob;
 window.publishJob = publishJob;
 window.deleteJob = deleteJob;
 window.updateProfile = updateProfile;
+window.updateApplicationStatus = updateApplicationStatus;
+window.contactApplicant = contactApplicant;
+window.expandCoverLetter = expandCoverLetter;
+window.toggleApplicantNotes = toggleApplicantNotes;
+window.saveApplicantNotes = saveApplicantNotes;
