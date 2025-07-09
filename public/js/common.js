@@ -69,6 +69,11 @@ function formatRelativeTime(dateString) {
     return `${Math.ceil(diffDays / 365)} năm trước`;
 }
 
+// Time ago function (alias for compatibility)
+function timeAgo(dateString) {
+    return formatRelativeTime(dateString);
+}
+
 // API call wrapper
 async function apiCall(endpoint, options = {}) {
     try {
@@ -254,6 +259,7 @@ window.RecruitmentApp = {
     formatCurrency,
     formatDate,
     formatRelativeTime,
+    timeAgo,
     apiCall,
     login,
     register,
