@@ -1,151 +1,131 @@
-<?php
-// Prevent any output before JSON
-ob_start();
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký - JobPortal</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="form-container">
+        <div class="form-header">
+            <h2><i class="fas fa-briefcase"></i> JobPortal</h2>
+            <p>Tạo tài khoản mới</p>
+        </div>
+        
+        <form id="register-form">
+            <div class="form-group">
+                <label for="user-type">Loại tài khoản:</label>
+                <select id="user-type" name="user_type" required>
+                    <option value="">Chọn loại tài khoản</option>
+                    <option value="candidate">Ứng viên</option>
+                    <option value="recruiter">Nhà tuyển dụng</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="full-name">Họ và tên:</label>
+                <input type="text" id="full-name" name="full_name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">Số điện thoại:</label>
+                <input type="tel" id="phone" name="phone">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Mật khẩu:</label>
+                <input type="password" id="password" name="password" required minlength="6">
+            </div>
+            
+            <div class="form-group">
+                <label for="confirm-password">Xác nhận mật khẩu:</label>
+                <input type="password" id="confirm-password" name="confirm_password" required>
+            </div>
+            
+            <div id="recruiter-fields" style="display: none;">
+                <div class="form-group">
+                    <label for="position">Chức vụ:</label>
+                    <input type="text" id="position" name="position" placeholder="VD: HR Manager, Recruiter">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary form-submit">
+                    <i class="fas fa-user-plus"></i> Đăng ký
+                </button>
+            </div>
+        </form>
+        
+        <div class="form-links">
+            <p>Đã có tài khoản? <a href="login.html">Đăng nhập ngay</a></p>
+            <p><a href="index.html">← Về trang chủ</a></p>
+        </div>
+    </div>
 
-// Set headers
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST');
-header('Access-Control-Allow-Headers: Content-Type');
-
-// Error reporting for debugging
-error_reporting(E_ALL);
-ini_set('display_errors', 0); // Don't display errors to prevent HTML output
-
-try {
-    if($_SERVER['REQUEST_METHOD'] == 'POST') {
-        // Get and validate JSON input
-        $input = file_get_contents("php://input");
-        $data = json_decode($input);
+    <script src="js/common.js"></script>
+    <script>
+        // Show/hide recruiter fields based on user type
+        document.getElementById('user-type').addEventListener('change', function() {
+            const recruiterFields = document.getElementById('recruiter-fields');
+            
+            if (this.value === 'recruiter') {
+                recruiterFields.style.display = 'block';
+            } else {
+                recruiterFields.style.display = 'none';
+            }
+        });
         
-        if(!$data) {
-            throw new Exception('Invalid JSON data received');
-        }
-        
-        // Check required fields
-        if(!isset($data->email) || !isset($data->password) || !isset($data->full_name) || !isset($data->user_type)) {
-            throw new Exception('Vui lòng nhập đầy đủ thông tin');
-        }
-        
-        // Validate user_type
-        if(!in_array($data->user_type, ['admin', 'recruiter', 'candidate'])) {
-            throw new Exception('Loại tài khoản không hợp lệ');
-        }
-        
-        // Include dependencies with error checking
-        $database_file = '../config/database.php';
-        $user_file = '../classes/User.php';
-        
-        if (!file_exists($database_file)) {
-            throw new Exception('Database configuration file not found');
-        }
-        
-        if (!file_exists($user_file)) {
-            throw new Exception('User class file not found');
-        }
-        
-        include_once $database_file;
-        include_once $user_file;
-        
-        // Initialize database
-        $database = new Database();
-        $db = $database->getConnection();
-        
-        if (!$db) {
-            throw new Exception('Database connection failed');
-        }
-        
-        // Initialize user
-        $user = new User($db);
-        $user->email = trim($data->email);
-        $user->password = $data->password;
-        $user->full_name = trim($data->full_name);
-        $user->phone = isset($data->phone) ? trim($data->phone) : '';
-        $user->user_type = $data->user_type;
-        
-        // Check if email exists
-        if($user->emailExists()) {
-            throw new Exception('Email đã được sử dụng');
-        }
-        
-        // Start database transaction
-        $db->beginTransaction();
-        
-        try {
-            // Create user
-            if(!$user->create()) {
-                throw new Exception('Không thể tạo tài khoản user');
+        // Handle form submission
+        document.getElementById('register-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const userData = Object.fromEntries(formData);
+            
+            // Validate password confirmation
+            if (userData.password !== userData.confirm_password) {
+                RecruitmentApp.showAlert('Mật khẩu xác nhận không khớp', 'error');
+                return;
             }
             
-            $user_id = $user->user_id;
+            // Remove confirm_password from data
+            delete userData.confirm_password;
             
-            // Create specific user type record
-            if($data->user_type == 'candidate') {
-                $query = "INSERT INTO candidates (user_id) VALUES (:user_id)";
-                $stmt = $db->prepare($query);
-                $stmt->bindParam(':user_id', $user_id);
+            // Show loading state
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang đăng ký...';
+            submitBtn.disabled = true;
+            
+            try {
+                const result = await RecruitmentApp.register(userData);
                 
-                if(!$stmt->execute()) {
-                    throw new Exception('Không thể tạo record candidate');
+                if (result.success) {
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
                 }
-                
-            } elseif($data->user_type == 'recruiter') {
-                $position = isset($data->position) ? trim($data->position) : '';
-                $query = "INSERT INTO recruiters (user_id, company_id, position) VALUES (:user_id, NULL, :position)";
-                $stmt = $db->prepare($query);
-                $stmt->bindParam(':user_id', $user_id);
-                $stmt->bindParam(':position', $position);
-                
-                if(!$stmt->execute()) {
-                    throw new Exception('Không thể tạo record recruiter');
-                }
-                
-            } elseif($data->user_type == 'admin') {
-                $default_permissions = '["manage_users", "approve_jobs", "generate_reports", "view_statistics"]';
-                $query = "INSERT INTO admins (user_id, permissions) VALUES (:user_id, :permissions)";
-                $stmt = $db->prepare($query);
-                $stmt->bindParam(':user_id', $user_id);
-                $stmt->bindParam(':permissions', $default_permissions);
-                
-                if(!$stmt->execute()) {
-                    throw new Exception('Không thể tạo record admin');
-                }
+            } finally {
+                // Restore button state
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
             }
-            
-            // Commit transaction
-            $db->commit();
-            
-            // Clear output buffer and send success response
-            ob_clean();
-            echo json_encode([
-                'success' => true,
-                'message' => 'Đăng ký thành công'
-            ]);
-            
-        } catch (Exception $e) {
-            // Rollback transaction
-            $db->rollBack();
-            throw $e;
-        }
+        });
         
-    } else {
-        throw new Exception('Phương thức không được hỗ trợ');
-    }
-    
-} catch (Exception $e) {
-    // Rollback transaction if still active
-    if (isset($db) && $db && $db->inTransaction()) {
-        $db->rollBack();
-    }
-    
-    // Clear output buffer and send error response
-    ob_clean();
-    echo json_encode([
-        'success' => false,
-        'message' => $e->getMessage()
-    ]);
-}
-
-// End output buffering
-ob_end_flush();
-?>
+        // Check if already logged in
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = RecruitmentApp.getCurrentUser();
+            if (user) {
+                window.location.href = 'dashboard.html';
+            }
+        });
+    </script>
+</body>
+</html>
