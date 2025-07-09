@@ -393,6 +393,170 @@
     </div>
 
     <script src="js/common.js"></script>
+    <script>
+        // Authentication check - ensure only recruiters can access this page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Checking authentication for recruiter dashboard...');
+            
+            // Check if user is logged in and is a recruiter
+            const user = RecruitmentApp.requireAuth('recruiter');
+            
+            if (!user) {
+                // requireAuth will handle the redirect
+                return;
+            }
+            
+            console.log('Authenticated recruiter:', user);
+            
+            // Update user name in UI
+            const userNameElement = document.getElementById('user-name');
+            if (userNameElement) {
+                userNameElement.textContent = user.full_name;
+            }
+            
+            // Initialize dashboard functionality
+            initializeDashboard();
+        });
+        
+        function initializeDashboard() {
+            console.log('Initializing recruiter dashboard...');
+            
+            // Tab switching functionality
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabName = button.getAttribute('data-tab');
+                    
+                    // Remove active class from all buttons and contents
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    // Add active class to clicked button and corresponding content
+                    button.classList.add('active');
+                    document.getElementById(tabName + '-tab').classList.add('active');
+                });
+            });
+            
+            // Initialize quick actions
+            const quickPostJob = document.getElementById('quick-post-job');
+            const detailedPostJob = document.getElementById('detailed-post-job');
+            const createJobBtn = document.getElementById('create-job-btn');
+            
+            if (quickPostJob) {
+                quickPostJob.addEventListener('click', () => {
+                    window.location.href = 'post-job.html?mode=quick';
+                });
+            }
+            
+            if (detailedPostJob) {
+                detailedPostJob.addEventListener('click', () => {
+                    window.location.href = 'post-job.html';
+                });
+            }
+            
+            if (createJobBtn) {
+                createJobBtn.addEventListener('click', () => {
+                    window.location.href = 'post-job.html';
+                });
+            }
+            
+            // Load dashboard data
+            loadDashboardStats();
+            loadRecentApplications();
+            loadHotJobs();
+            
+            console.log('Recruiter dashboard initialized successfully');
+        }
+        
+        async function loadDashboardStats() {
+            try {
+                // Load recruiter-specific jobs data
+                const jobsResponse = await fetch('../api/jobs.php?recruiter_jobs=1');
+                const jobsData = await jobsResponse.json();
+                
+                if (jobsData.success) {
+                    const jobs = jobsData.data || [];
+                    
+                    // Update stats
+                    document.getElementById('total-jobs').textContent = jobs.length;
+                    
+                    // Calculate total views and applicants
+                    let totalViews = 0;
+                    let totalApplicants = 0;
+                    
+                    jobs.forEach(job => {
+                        totalViews += parseInt(job.view_count) || 0;
+                        totalApplicants += parseInt(job.application_count) || 0;
+                    });
+                    
+                    document.getElementById('total-views').textContent = totalViews;
+                    document.getElementById('total-applicants').textContent = totalApplicants;
+                    document.getElementById('jobs-count').textContent = jobs.length;
+                    
+                    // For now, set hired count to 0 (would need separate API endpoint)
+                    document.getElementById('total-hired').textContent = '0';
+                } else {
+                    console.error('Failed to load jobs data:', jobsData.message);
+                }
+            } catch (error) {
+                console.error('Error loading dashboard stats:', error);
+            }
+        }
+        
+        async function loadRecentApplications() {
+            try {
+                // This would need a separate API endpoint for recruiter applications
+                const recentApplicantsContainer = document.getElementById('recent-applicants');
+                recentApplicantsContainer.innerHTML = `
+                    <div class="recent-item">
+                        <div class="item-info">
+                            <p>Chưa có ứng viên mới</p>
+                            <small>Đăng tin tuyển dụng để nhận được ứng viên</small>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading recent applications:', error);
+            }
+        }
+        
+        async function loadHotJobs() {
+            try {
+                const hotJobsContainer = document.getElementById('hot-jobs');
+                hotJobsContainer.innerHTML = `
+                    <div class="hot-job-item">
+                        <div class="job-info">
+                            <h4>Chưa có tin tuyển dụng</h4>
+                            <p>Tạo tin tuyển dụng đầu tiên của bạn</p>
+                        </div>
+                        <div class="job-stats">
+                            <span class="views">0 lượt xem</span>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading hot jobs:', error);
+            }
+        }
+        
+        // User menu functionality
+        const userMenuBtn = document.getElementById('user-menu-btn');
+        const userDropdown = document.querySelector('.user-dropdown');
+        
+        if (userMenuBtn && userDropdown) {
+            userMenuBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                userDropdown.classList.toggle('show');
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function() {
+                userDropdown.classList.remove('show');
+            });
+        }
+    </script>
     <script src="js/recruiter-dashboard.js"></script>
 </body>
 </html>

@@ -6,58 +6,114 @@
     <title>Đăng ký - JobPortal</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .form-container {
+            max-width: 500px;
+        }
+        .position-field {
+            margin-top: 0;
+            opacity: 1;
+            height: auto;
+            overflow: visible;
+            transition: all 0.3s ease;
+        }
+        .position-field.hidden {
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+            margin-top: 0;
+        }
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            outline: none;
+            background: white;
+            transition: border-color 0.3s;
+        }
+        .form-group select:focus {
+            border-color: #2c5aa0;
+        }
+        .password-match {
+            border-color: #28a745 !important;
+        }
+        .password-mismatch {
+            border-color: #dc3545 !important;
+        }
+        .password-strength {
+            font-size: 0.8rem;
+            margin-top: 5px;
+            color: #666;
+        }
+        .strength-weak { color: #dc3545; }
+        .strength-medium { color: #ffc107; }
+        .strength-strong { color: #28a745; }
+    </style>
 </head>
 <body>
     <div class="form-container">
         <div class="form-header">
             <h2><i class="fas fa-briefcase"></i> JobPortal</h2>
-            <p>Tạo tài khoản mới</p>
+            <p>Tạo tài khoản mới để bắt đầu</p>
         </div>
+        
+        <div id="alert-container"></div>
         
         <form id="register-form">
             <div class="form-group">
-                <label for="user-type">Loại tài khoản:</label>
-                <select id="user-type" name="user_type" required>
+                <label for="userType">Loại tài khoản:</label>
+                <select id="userType" name="user_type" required>
                     <option value="">Chọn loại tài khoản</option>
                     <option value="candidate">Ứng viên</option>
                     <option value="recruiter">Nhà tuyển dụng</option>
+                    <option value="admin">Quản trị viên</option>
                 </select>
             </div>
             
             <div class="form-group">
-                <label for="full-name">Họ và tên:</label>
-                <input type="text" id="full-name" name="full_name" required>
+                <label for="fullName">Họ và tên:</label>
+                <input type="text" id="fullName" name="full_name" required 
+                       placeholder="Nhập họ và tên đầy đủ">
             </div>
             
             <div class="form-group">
                 <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
+                <input type="email" id="email" name="email" required 
+                       placeholder="example@email.com">
             </div>
             
             <div class="form-group">
                 <label for="phone">Số điện thoại:</label>
-                <input type="tel" id="phone" name="phone">
+                <input type="tel" id="phone" name="phone" 
+                       placeholder="0123456789">
             </div>
             
             <div class="form-group">
                 <label for="password">Mật khẩu:</label>
-                <input type="password" id="password" name="password" required minlength="6">
+                <input type="password" id="password" name="password" required 
+                       placeholder="Nhập mật khẩu" minlength="6">
+                <div id="password-strength" class="password-strength"></div>
             </div>
             
             <div class="form-group">
-                <label for="confirm-password">Xác nhận mật khẩu:</label>
-                <input type="password" id="confirm-password" name="confirm_password" required>
+                <label for="confirmPassword">Xác nhận mật khẩu:</label>
+                <input type="password" id="confirmPassword" name="confirm_password" required 
+                       placeholder="Nhập lại mật khẩu">
+                <div id="password-match" class="password-strength"></div>
             </div>
             
-            <div id="recruiter-fields" style="display: none;">
+            <div class="position-field hidden" id="positionField">
                 <div class="form-group">
-                    <label for="position">Chức vụ:</label>
-                    <input type="text" id="position" name="position" placeholder="VD: HR Manager, Recruiter">
+                    <label for="position">Vị trí công việc:</label>
+                    <input type="text" id="position" name="position" 
+                           placeholder="VD: HR Manager, IT Recruiter">
                 </div>
             </div>
             
             <div class="form-group">
-                <button type="submit" class="btn btn-primary form-submit">
+                <button type="submit" class="btn btn-primary form-submit" id="submitBtn">
                     <i class="fas fa-user-plus"></i> Đăng ký
                 </button>
             </div>
@@ -71,59 +127,247 @@
 
     <script src="js/common.js"></script>
     <script>
-        // Show/hide recruiter fields based on user type
-        document.getElementById('user-type').addEventListener('change', function() {
-            const recruiterFields = document.getElementById('recruiter-fields');
+        // Show/hide position field based on user type
+        document.getElementById('userType').addEventListener('change', function() {
+            const positionField = document.getElementById('positionField');
+            const positionInput = document.getElementById('position');
             
             if (this.value === 'recruiter') {
-                recruiterFields.style.display = 'block';
+                positionField.classList.remove('hidden');
+                positionInput.required = true;
             } else {
-                recruiterFields.style.display = 'none';
+                positionField.classList.add('hidden');
+                positionInput.required = false;
+                positionInput.value = '';
             }
         });
-        
-        // Handle form submission
-        document.getElementById('register-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
+
+        // Password strength checker
+        document.getElementById('password').addEventListener('input', function() {
+            const password = this.value;
+            const strengthDiv = document.getElementById('password-strength');
             
-            const formData = new FormData(this);
-            const userData = Object.fromEntries(formData);
-            
-            // Validate password confirmation
-            if (userData.password !== userData.confirm_password) {
-                RecruitmentApp.showAlert('Mật khẩu xác nhận không khớp', 'error');
+            if (password.length === 0) {
+                strengthDiv.textContent = '';
                 return;
             }
             
-            // Remove confirm_password from data
-            delete userData.confirm_password;
+            let strength = 0;
+            if (password.length >= 6) strength++;
+            if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+            if (password.match(/[0-9]/)) strength++;
+            if (password.match(/[^a-zA-Z0-9]/)) strength++;
+            
+            if (password.length < 6) {
+                strengthDiv.textContent = 'Mật khẩu quá ngắn (tối thiểu 6 ký tự)';
+                strengthDiv.className = 'password-strength strength-weak';
+                this.style.borderColor = '#dc3545';
+            } else if (strength <= 1) {
+                strengthDiv.textContent = 'Mật khẩu yếu';
+                strengthDiv.className = 'password-strength strength-weak';
+                this.style.borderColor = '#dc3545';
+            } else if (strength <= 2) {
+                strengthDiv.textContent = 'Mật khẩu trung bình';
+                strengthDiv.className = 'password-strength strength-medium';
+                this.style.borderColor = '#ffc107';
+            } else {
+                strengthDiv.textContent = 'Mật khẩu mạnh';
+                strengthDiv.className = 'password-strength strength-strong';
+                this.style.borderColor = '#28a745';
+            }
+            
+            // Check confirm password when password changes
+            checkPasswordMatch();
+        });
+
+        // Confirm password checker
+        document.getElementById('confirmPassword').addEventListener('input', checkPasswordMatch);
+
+        function checkPasswordMatch() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const matchDiv = document.getElementById('password-match');
+            const confirmInput = document.getElementById('confirmPassword');
+            
+            if (confirmPassword.length === 0) {
+                matchDiv.textContent = '';
+                confirmInput.className = '';
+                return;
+            }
+            
+            if (password === confirmPassword) {
+                matchDiv.textContent = '✓ Mật khẩu khớp';
+                matchDiv.style.color = '#28a745';
+                confirmInput.classList.add('password-match');
+                confirmInput.classList.remove('password-mismatch');
+            } else {
+                matchDiv.textContent = '✗ Mật khẩu không khớp';
+                matchDiv.style.color = '#dc3545';
+                confirmInput.classList.add('password-mismatch');
+                confirmInput.classList.remove('password-match');
+            }
+        }
+
+        // Form submission handler
+        document.getElementById('register-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const alertContainer = document.getElementById('alert-container');
+            
+            // Validate passwords match
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                showAlert('Mật khẩu xác nhận không khớp!', 'error');
+                return;
+            }
             
             // Show loading state
-            const submitBtn = this.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang đăng ký...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
             submitBtn.disabled = true;
             
+            // Clear previous alerts
+            alertContainer.innerHTML = '';
+            
+            // Collect form data
+            const formData = new FormData(this);
+            const data = {
+                full_name: formData.get('full_name').trim(),
+                email: formData.get('email').trim().toLowerCase(),
+                password: formData.get('password'),
+                phone: formData.get('phone').trim(),
+                user_type: formData.get('user_type'),
+                position: formData.get('position') ? formData.get('position').trim() : ''
+            };
+
+            // Basic validation
+            if (!data.full_name || !data.email || !data.password || !data.user_type) {
+                showAlert('Vui lòng điền đầy đủ thông tin bắt buộc!', 'error');
+                resetSubmitButton();
+                return;
+            }
+
+            if (data.password.length < 6) {
+                showAlert('Mật khẩu phải có ít nhất 6 ký tự!', 'error');
+                resetSubmitButton();
+                return;
+            }
+
+            if (data.user_type === 'recruiter' && !data.position) {
+                showAlert('Vui lòng nhập vị trí công việc cho tài khoản nhà tuyển dụng!', 'error');
+                resetSubmitButton();
+                return;
+            }
+
             try {
-                const result = await RecruitmentApp.register(userData);
+                console.log('Sending registration data:', data);
+                
+                const response = await fetch('../auth/register.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                console.log('Response data:', result);
                 
                 if (result.success) {
+                    showAlert('✅ Đăng ký thành công! Đang chuyển hướng...', 'success');
                     setTimeout(() => {
                         window.location.href = 'login.html';
                     }, 2000);
+                } else {
+                    // Check for database constraint errors
+                    if (result.message && (result.message.includes('company_id') || result.message.includes('SQLSTATE[23000]'))) {
+                        showDatabaseError();
+                    } else {
+                        showAlert('❌ ' + (result.message || 'Có lỗi xảy ra khi đăng ký'), 'error');
+                    }
+                    resetSubmitButton();
                 }
-            } finally {
-                // Restore button state
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
+            } catch (error) {
+                console.error('Registration error:', error);
+                showAlert('❌ Có lỗi kết nối! Vui lòng thử lại sau.', 'error');
+                resetSubmitButton();
             }
         });
-        
-        // Check if already logged in
-        document.addEventListener('DOMContentLoaded', function() {
-            const user = RecruitmentApp.getCurrentUser();
-            if (user) {
-                window.location.href = 'dashboard.html';
+
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alert-container');
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+            
+            alertContainer.innerHTML = `
+                <div class="alert ${alertClass}">
+                    ${message}
+                </div>
+            `;
+            
+            // Auto hide success messages
+            if (type === 'success') {
+                setTimeout(() => {
+                    alertContainer.innerHTML = '';
+                }, 5000);
+            }
+        }
+
+        function showDatabaseError() {
+            const alertContainer = document.getElementById('alert-container');
+            
+            alertContainer.innerHTML = `
+                <div class="alert alert-error">
+                    <h4><i class="fas fa-exclamation-triangle"></i> Cần cấu hình database</h4>
+                    <p><strong>Vấn đề:</strong> Database chưa được cấu hình đúng để hỗ trợ đăng ký tài khoản nhà tuyển dụng.</p>
+                    <p><strong>Giải pháp:</strong> Chạy migration để sửa cấu hình database.</p>
+                    <div style="margin-top: 15px;">
+                        <a href="run-migration.php" target="_blank" class="btn btn-primary" style="font-size: 0.9rem;">
+                            <i class="fas fa-tools"></i> Sửa ngay lập tức
+                        </a>
+                    </div>
+                    <p style="margin-top: 10px; font-size: 0.9rem; opacity: 0.8;">
+                        <i class="fas fa-info-circle"></i>
+                        Migration này an toàn và chỉ thay đổi cấu hình để cho phép nhà tuyển dụng đăng ký mà chưa cần thuộc công ty cụ thể.
+                    </p>
+                </div>
+            `;
+        }
+
+        function resetSubmitButton() {
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Đăng ký';
+        }
+
+        // Form validation styling
+        document.querySelectorAll('input[required], select[required]').forEach(input => {
+            input.addEventListener('blur', function() {
+                if (this.value.trim() === '') {
+                    this.style.borderColor = '#dc3545';
+                } else {
+                    this.style.borderColor = '#28a745';
+                }
+            });
+            
+            input.addEventListener('input', function() {
+                if (this.checkValidity() && this.value.trim() !== '') {
+                    this.style.borderColor = '#28a745';
+                } else if (this.value.trim() !== '') {
+                    this.style.borderColor = '#dc3545';
+                }
+            });
+        });
+
+        // Email validation
+        document.getElementById('email').addEventListener('input', function() {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (emailRegex.test(this.value)) {
+                this.style.borderColor = '#28a745';
+            } else if (this.value.length > 0) {
+                this.style.borderColor = '#dc3545';
             }
         });
     </script>

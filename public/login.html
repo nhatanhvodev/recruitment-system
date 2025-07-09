@@ -14,6 +14,8 @@
             <p>Đăng nhập vào tài khoản của bạn</p>
         </div>
         
+        <div id="alert-container"></div>
+        
         <form id="login-form">
             <div class="form-group">
                 <label for="email">Email:</label>
@@ -45,6 +47,7 @@
             
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
+            const alertContainer = document.getElementById('alert-container');
             
             // Show loading state
             const submitBtn = this.querySelector('button[type="submit"]');
@@ -52,21 +55,50 @@
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang đăng nhập...';
             submitBtn.disabled = true;
             
+            // Clear previous alerts
+            alertContainer.innerHTML = '';
+            
             try {
-                const result = await RecruitmentApp.login(email, password);
+                // Make login request
+                const response = await fetch('../auth/login.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
+
+                const result = await response.json();
+                console.log('Login result:', result);
                 
                 if (result.success) {
+                    // Store user data
+                    if (typeof(Storage) !== "undefined") {
+                        localStorage.setItem('user', JSON.stringify(result.user));
+                        localStorage.setItem('logged_in', 'true');
+                    }
+                    
+                    showAlert('✅ Đăng nhập thành công! Đang chuyển hướng...', 'success');
+                    
                     // Redirect based on user type
                     setTimeout(() => {
                         if (result.user.user_type === 'admin') {
                             window.location.href = 'admin/dashboard.html';
                         } else if (result.user.user_type === 'recruiter') {
-                            window.location.href = 'recruiter/dashboard.html';
+                            window.location.href = 'recruiter-dashboard.html';
                         } else {
                             window.location.href = 'dashboard.html';
                         }
                     }, 1000);
+                } else {
+                    showAlert('❌ ' + (result.message || 'Email hoặc mật khẩu không đúng'), 'error');
                 }
+            } catch (error) {
+                console.error('Login error:', error);
+                showAlert('❌ Có lỗi kết nối! Vui lòng thử lại sau.', 'error');
             } finally {
                 // Restore button state
                 submitBtn.innerHTML = originalText;
@@ -74,11 +106,43 @@
             }
         });
         
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alert-container');
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+            
+            alertContainer.innerHTML = `
+                <div class="alert ${alertClass}">
+                    ${message}
+                </div>
+            `;
+            
+            // Auto hide success messages
+            if (type === 'success') {
+                setTimeout(() => {
+                    alertContainer.innerHTML = '';
+                }, 5000);
+            }
+        }
+        
         // Check if already logged in
         document.addEventListener('DOMContentLoaded', function() {
-            const user = RecruitmentApp.getCurrentUser();
-            if (user) {
-                window.location.href = 'dashboard.html';
+            if (typeof(Storage) !== "undefined") {
+                const isLoggedIn = localStorage.getItem('logged_in');
+                const userData = localStorage.getItem('user');
+                
+                if (isLoggedIn === 'true' && userData) {
+                    const user = JSON.parse(userData);
+                    console.log('Already logged in user:', user);
+                    
+                    // Redirect to appropriate dashboard
+                    if (user.user_type === 'admin') {
+                        window.location.href = 'admin/dashboard.html';
+                    } else if (user.user_type === 'recruiter') {
+                        window.location.href = 'recruiter-dashboard.html';
+                    } else {
+                        window.location.href = 'dashboard.html';
+                    }
+                }
             }
         });
     </script>
