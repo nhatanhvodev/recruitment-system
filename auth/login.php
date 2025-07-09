@@ -14,13 +14,12 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     if(isset($data->email) && isset($data->password)) {
         if($user->login($data->email, $data->password)) {
-            // Get user type
-            $user_type = $user->getUserType($user->user_id);
-            
+            // User type is now available directly from login
             $_SESSION['user_id'] = $user->user_id;
             $_SESSION['email'] = $user->email;
             $_SESSION['full_name'] = $user->full_name;
-            $_SESSION['user_type'] = $user_type;
+            $_SESSION['phone'] = $user->phone;
+            $_SESSION['user_type'] = $user->user_type;
             $_SESSION['logged_in'] = true;
             
             echo json_encode([
@@ -30,7 +29,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                     'user_id' => $user->user_id,
                     'email' => $user->email,
                     'full_name' => $user->full_name,
-                    'user_type' => $user_type
+                    'phone' => $user->phone,
+                    'user_type' => $user->user_type
                 ]
             ]);
         } else {

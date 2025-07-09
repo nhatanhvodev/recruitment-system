@@ -10,6 +10,7 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     full_name VARCHAR(255) NOT NULL,
     phone VARCHAR(20),
+    user_type ENUM('admin', 'recruiter', 'candidate') NOT NULL DEFAULT 'candidate',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     is_active BOOLEAN DEFAULT TRUE
@@ -145,9 +146,9 @@ CREATE TABLE statistics (
     INDEX idx_date (date)
 );
 
--- Insert default admin user
-INSERT INTO users (email, password, full_name, phone) VALUES 
-('admin@recruitment.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'System Administrator', '0123456789');
+-- Insert default admin user with user_type
+INSERT INTO users (email, password, full_name, phone, user_type) VALUES 
+('admin@recruitment.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'System Administrator', '0123456789', 'admin');
 
 INSERT INTO admins (user_id) VALUES (1);
 
