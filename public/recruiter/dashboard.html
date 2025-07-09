@@ -4,9 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recruiter Dashboard - JobPortal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/recruiter-dashboard.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom styles to ensure recruiter dashboard styles take precedence -->
+    <style>
+        /* Force recruiter dashboard styles to override */
+        body .dashboard-section {
+            background: linear-gradient(135deg, #2c5aa0 0%, #1e3f73 100%) !important;
+            padding: 120px 0 60px !important;
+            min-height: 100vh !important;
+        }
+        
+        body .container-fluid {
+            max-width: 1400px !important;
+            margin: 0 auto !important;
+            padding: 0 20px !important;
+        }
+        
+        body .quick-actions-bar {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            margin-bottom: 2rem !important;
+            padding: 1.5rem 2rem !important;
+            background: white !important;
+            border-radius: 12px !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+        }
+        
+        body .dashboard-tabs .tab-nav {
+            display: flex !important;
+            background: white !important;
+            border-radius: 12px !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+            padding: 0.5rem !important;
+            gap: 0.25rem !important;
+        }
+        
+        body .dashboard-main {
+            background: white !important;
+            border-radius: 12px !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+            overflow: hidden !important;
+        }
+    </style>
 </head>
 <body>
     <!-- Header -->
