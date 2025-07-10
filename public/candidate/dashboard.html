@@ -5,91 +5,223 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Candidate Dashboard - JobPortal</title>
     <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/dashboard.css">
     <link rel="stylesheet" href="../css/candidate-dashboard.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="candidate-dashboard-body">
     <!-- Header -->
-    <header class="header">
+    <header class="modern-header">
         <nav class="navbar">
             <div class="container">
                 <div class="nav-brand">
-                    <h1><i class="fas fa-briefcase"></i> JobPortal</h1>
+                    <div class="brand-logo">
+                        <i class="fas fa-briefcase"></i>
+                        <span>JobPortal</span>
+                    </div>
                 </div>
-                <ul class="nav-menu">
-                    <li><a href="../index.html">Trang chủ</a></li>
-                    <li><a href="dashboard.html" class="active">Menu</a></li>
-                    <li class="auth-buttons">
-                        <span id="user-name" class="welcome-text"></span>
-                        <button id="logout-btn" class="btn btn-primary">Đăng xuất</button>
-                    </li>
-                </ul>
+                <div class="nav-right">
+                    <div class="user-profile-nav">
+                        <div class="user-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="user-info">
+                            <span id="user-name" class="user-name"></span>
+                            <span class="user-role">Ứng viên</span>
+                        </div>
+                        <div class="nav-actions">
+                            <button id="logout-btn" class="logout-btn" title="Đăng xuất">
+                                <i class="fas fa-sign-out-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </nav>
     </header>
 
-    <!-- Dashboard Section -->
-    <section class="dashboard-section">
-        <div class="container">
-            <!-- Dashboard Header -->
-            <div class="dashboard-header">
-                <h1 id="dashboard-title"><i class="fas fa-user"></i> Dashboard Ứng viên</h1>
-                <p id="dashboard-subtitle">Quản lý đơn ứng tuyển và hồ sơ cá nhân của bạn</p>
-            </div>
+    <!-- Main Dashboard -->
+    <main class="dashboard-main">
+        <div class="dashboard-container">
+            <!-- Sidebar Navigation -->
+            <aside class="dashboard-sidebar">
+                <div class="sidebar-header">
+                    <div class="user-profile-card">
+                        <div class="profile-avatar">
+                            <div class="avatar-circle">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="status-indicator"></div>
+                        </div>
+                        <div class="profile-info">
+                            <h3 id="profile-name">Võ Lý Nhật Anh</h3>
+                            <p id="profile-email">nanh@gmail.com</p>
+                            <span class="profile-badge">Ứng viên</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <nav class="sidebar-nav">
+                    <a href="#overview" class="nav-item active" data-section="overview">
+                        <div class="nav-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <span class="nav-text">Tổng quan</span>
+                        <div class="nav-indicator"></div>
+                    </a>
+                    <a href="#applications" class="nav-item" data-section="applications">
+                        <div class="nav-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <span class="nav-text">Đơn ứng tuyển</span>
+                        <div class="nav-badge" id="applications-badge">0</div>
+                        <div class="nav-indicator"></div>
+                    </a>
+                    <a href="#saved-jobs" class="nav-item" data-section="saved-jobs">
+                        <div class="nav-icon">
+                            <i class="fas fa-bookmark"></i>
+                        </div>
+                        <span class="nav-text">Việc đã lưu</span>
+                        <div class="nav-indicator"></div>
+                    </a>
+                    <a href="#job-search" class="nav-item" data-section="job-search">
+                        <div class="nav-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <span class="nav-text">Tìm việc làm</span>
+                        <div class="nav-indicator"></div>
+                    </a>
+                    <a href="#profile" class="nav-item" data-section="profile">
+                        <div class="nav-icon">
+                            <i class="fas fa-user-edit"></i>
+                        </div>
+                        <span class="nav-text">Hồ sơ cá nhân</span>
+                        <div class="nav-indicator"></div>
+                    </a>
+                    <a href="#settings" class="nav-item" data-section="settings">
+                        <div class="nav-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <span class="nav-text">Cài đặt</span>
+                        <div class="nav-indicator"></div>
+                    </a>
+                </nav>
 
-            <!-- Dashboard Content -->
-            <div class="dashboard-container candidate new-layout">
-              <div class="candidate-info-card">
-                <div class="avatar">
-                  <i class="fas fa-user-circle"></i>
+                <div class="sidebar-footer">
+                    <div class="quick-actions">
+                        <a href="../index.html" class="quick-action-btn primary">
+                            <i class="fas fa-plus"></i>
+                            <span>Tìm việc mới</span>
+                        </a>
+                        <a href="../job-detail.html" class="quick-action-btn secondary">
+                            <i class="fas fa-eye"></i>
+                            <span>Xem tin hot</span>
+                        </a>
+                    </div>
                 </div>
-                <div class="info">
-                  <h3 id="profile-name">Võ Lý Nhật Anh</h3>
-                  <p id="profile-email">nanh@gmail.com</p>
-                  <span class="user-type-badge">Ứng viên</span>
-                </div>
-              </div>
-              <nav class="candidate-menu">
-                <a href="#overview" class="nav-item active" data-section="overview"><i class="fas fa-chart-bar"></i> Tổng quan</a>
-                <a href="#applications" class="nav-item" data-section="applications"><i class="fas fa-file-alt"></i> Đơn ứng tuyển</a>
-                <a href="#saved-jobs" class="nav-item" data-section="saved-jobs"><i class="fas fa-bookmark"></i> Việc làm đã lưu</a>
-                <a href="#job-search" class="nav-item" data-section="job-search"><i class="fas fa-search"></i> Tìm việc làm</a>
-                <a href="#profile" class="nav-item" data-section="profile"><i class="fas fa-user-edit"></i> Hồ sơ cá nhân</a>
-                <a href="#settings" class="nav-item" data-section="settings"><i class="fas fa-cog"></i> Cài đặt</a>
-              </nav>
-              <div class="dashboard-content">
+            </aside>
+
+            <!-- Content Area -->
+            <div class="dashboard-content">
                 <!-- Overview Section -->
-                    <div id="overview-section" class="content-section active">
-                        <div class="section-header">
-                            <h2>Tổng quan</h2>
-                            <div class="section-actions">
-                                <a href="../index.html" class="btn btn-primary">
-                                    <i class="fas fa-search"></i> Tìm việc làm
-                                </a>
-                            </div>
+                <section id="overview-section" class="content-section active">
+                    <div class="section-header">
+                        <div class="header-content">
+                            <h1>Chào mừng trở lại! 👋</h1>
+                            <p>Theo dõi quá trình ứng tuyển và khám phá cơ hội mới</p>
                         </div>
-
-                        <!-- Stats Cards -->
-                        <div class="stats-grid" id="stats-grid">
-                            <!-- Stats will be loaded here -->
-                        </div>
-
-                        <!-- Recent Activity -->
-                        <div class="recent-activity">
-                            <h3>Hoạt động gần đây</h3>
-                            <div id="recent-activity-list" class="activity-list">
-                                <!-- Recent activities will be loaded here -->
-                            </div>
+                        <div class="header-actions">
+                            <button class="header-btn" onclick="location.reload()">
+                                <i class="fas fa-sync-alt"></i>
+                                Làm mới
+                            </button>
                         </div>
                     </div>
 
-                    <!-- Applications Section -->
-                    <div id="applications-section" class="content-section">
-                        <div class="section-header">
-                            <h2>Đơn ứng tuyển của tôi</h2>
-                            <div class="section-filters">
-                                <select id="application-status-filter">
+                    <!-- Stats Grid -->
+                    <div class="stats-container">
+                        <div class="stats-grid" id="stats-grid">
+                            <!-- Stats will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Dashboard Grid -->
+                    <div class="dashboard-grid">
+                        <!-- Recent Activity -->
+                        <div class="dashboard-card">
+                            <div class="card-header">
+                                <h3>
+                                    <i class="fas fa-clock"></i>
+                                    Hoạt động gần đây
+                                </h3>
+                                <a href="#applications" class="view-all-link" data-section="applications">
+                                    Xem tất cả
+                                    <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                            <div class="card-content">
+                                <div id="recent-activity-list" class="activity-list">
+                                    <!-- Recent activities will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="dashboard-card">
+                            <div class="card-header">
+                                <h3>
+                                    <i class="fas fa-bolt"></i>
+                                    Hành động nhanh
+                                </h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="quick-actions-list">
+                                    <a href="#job-search" class="quick-action-item" data-section="job-search">
+                                        <div class="action-icon search">
+                                            <i class="fas fa-search"></i>
+                                        </div>
+                                        <div class="action-content">
+                                            <h4>Tìm việc làm</h4>
+                                            <p>Khám phá cơ hội mới</p>
+                                        </div>
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                    <a href="#profile" class="quick-action-item" data-section="profile">
+                                        <div class="action-icon profile">
+                                            <i class="fas fa-user-edit"></i>
+                                        </div>
+                                        <div class="action-content">
+                                            <h4>Cập nhật hồ sơ</h4>
+                                            <p>Hoàn thiện thông tin</p>
+                                        </div>
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                    <a href="#saved-jobs" class="quick-action-item" data-section="saved-jobs">
+                                        <div class="action-icon bookmark">
+                                            <i class="fas fa-bookmark"></i>
+                                        </div>
+                                        <div class="action-content">
+                                            <h4>Việc đã lưu</h4>
+                                            <p>Xem lại công việc quan tâm</p>
+                                        </div>
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Applications Section -->
+                <section id="applications-section" class="content-section">
+                    <div class="section-header">
+                        <div class="header-content">
+                            <h1>Đơn ứng tuyển của tôi</h1>
+                            <p>Theo dõi tình trạng các đơn ứng tuyển</p>
+                        </div>
+                        <div class="header-actions">
+                            <div class="filter-group">
+                                <select id="application-status-filter" class="filter-select">
                                     <option value="all">Tất cả trạng thái</option>
                                     <option value="pending">Đang chờ</option>
                                     <option value="reviewed">Đã xem</option>
@@ -99,146 +231,236 @@
                                 </select>
                             </div>
                         </div>
+                    </div>
 
+                    <div class="content-body">
                         <div id="applications-list" class="applications-list">
                             <!-- Applications will be loaded here -->
                         </div>
                     </div>
+                </section>
 
-                    <!-- Saved Jobs Section -->
-                    <div id="saved-jobs-section" class="content-section">
-                        <div class="section-header">
-                            <h2>Việc làm đã lưu</h2>
-                            <div class="section-actions">
-                                <a href="../index.html" class="btn btn-outline">
-                                    <i class="fas fa-plus"></i> Tìm thêm việc làm
-                                </a>
-                            </div>
+                <!-- Saved Jobs Section -->
+                <section id="saved-jobs-section" class="content-section">
+                    <div class="section-header">
+                        <div class="header-content">
+                            <h1>Việc làm đã lưu</h1>
+                            <p>Những công việc bạn quan tâm</p>
                         </div>
+                        <div class="header-actions">
+                            <a href="../index.html" class="header-btn primary">
+                                <i class="fas fa-plus"></i>
+                                Tìm thêm việc
+                            </a>
+                        </div>
+                    </div>
 
-                        <div id="saved-jobs-list" class="saved-jobs-list">
+                    <div class="content-body">
+                        <div id="saved-jobs-list" class="saved-jobs-grid">
                             <!-- Saved jobs will be loaded here -->
                         </div>
                     </div>
+                </section>
 
-                    <!-- Job Search Section -->
-                    <div id="job-search-section" class="content-section">
-                        <div class="section-header">
-                            <h2>Tìm kiếm việc làm</h2>
-                            <p>Tìm kiếm cơ hội nghề nghiệp phù hợp với bạn</p>
-                        </div>
-
-                        <div class="job-search-form">
-                            <div class="search-filters">
-                                <div class="filter-group">
-                                    <input type="text" id="job-search-keyword" placeholder="Từ khóa, tên công ty...">
-                                    <select id="job-search-location">
-                                        <option value="">Tất cả địa điểm</option>
-                                        <option value="Hà Nội">Hà Nội</option>
-                                        <option value="TP.HCM">TP.HCM</option>
-                                        <option value="Đà Nẵng">Đà Nẵng</option>
-                                    </select>
-                                    <select id="job-search-category">
-                                        <option value="">Tất cả ngành nghề</option>
-                                        <option value="IT">Công nghệ thông tin</option>
-                                        <option value="Marketing">Marketing</option>
-                                        <option value="Sales">Kinh doanh</option>
-                                    </select>
-                                    <button id="search-jobs-btn" class="btn btn-primary">
-                                        <i class="fas fa-search"></i> Tìm kiếm
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="search-results" class="search-results">
-                            <!-- Search results will be loaded here -->
+                <!-- Job Search Section -->
+                <section id="job-search-section" class="content-section">
+                    <div class="section-header">
+                        <div class="header-content">
+                            <h1>Tìm kiếm việc làm</h1>
+                            <p>Khám phá các cơ hội nghề nghiệp phù hợp</p>
                         </div>
                     </div>
 
-                    <!-- Profile Section -->
-                    <div id="profile-section" class="content-section">
-                        <div class="section-header">
-                            <h2>Hồ sơ cá nhân</h2>
-                            <button id="edit-profile-btn" class="btn btn-outline">
-                                <i class="fas fa-edit"></i> Chỉnh sửa
+                    <div class="content-body">
+                        <div class="search-container">
+                            <div class="search-form-card">
+                                <div class="search-form">
+                                    <div class="search-input-group">
+                                        <div class="input-field">
+                                            <i class="fas fa-search"></i>
+                                            <input type="text" id="job-search-keyword" placeholder="Tìm theo từ khóa, tên công ty...">
+                                        </div>
+                                        <div class="select-field">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <select id="job-search-location">
+                                                <option value="">Tất cả địa điểm</option>
+                                                <option value="Hà Nội">Hà Nội</option>
+                                                <option value="TP.HCM">TP.HCM</option>
+                                                <option value="Đà Nẵng">Đà Nẵng</option>
+                                            </select>
+                                        </div>
+                                        <div class="select-field">
+                                            <i class="fas fa-briefcase"></i>
+                                            <select id="job-search-category">
+                                                <option value="">Tất cả ngành nghề</option>
+                                                <option value="IT">Công nghệ thông tin</option>
+                                                <option value="Marketing">Marketing</option>
+                                                <option value="Sales">Kinh doanh</option>
+                                            </select>
+                                        </div>
+                                        <button id="search-jobs-btn" class="search-btn">
+                                            <i class="fas fa-search"></i>
+                                            Tìm kiếm
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="search-results" class="search-results">
+                                <!-- Search results will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Profile Section -->
+                <section id="profile-section" class="content-section">
+                    <div class="section-header">
+                        <div class="header-content">
+                            <h1>Hồ sơ cá nhân</h1>
+                            <p>Quản lý thông tin và hồ sơ của bạn</p>
+                        </div>
+                        <div class="header-actions">
+                            <button id="edit-profile-btn" class="header-btn primary">
+                                <i class="fas fa-edit"></i>
+                                Chỉnh sửa
                             </button>
                         </div>
+                    </div>
 
+                    <div class="content-body">
                         <div id="profile-content" class="profile-content">
                             <!-- Profile form will be loaded here -->
                         </div>
                     </div>
+                </section>
 
-                    <!-- Settings Section -->
-                    <div id="settings-section" class="content-section">
-                        <div class="section-header">
-                            <h2>Cài đặt tài khoản</h2>
+                <!-- Settings Section -->
+                <section id="settings-section" class="content-section">
+                    <div class="section-header">
+                        <div class="header-content">
+                            <h1>Cài đặt tài khoản</h1>
+                            <p>Tùy chỉnh trải nghiệm của bạn</p>
                         </div>
+                    </div>
 
-                        <div class="settings-content">
-                            <div class="setting-group">
-                                <h3>Thông báo</h3>
-                                <div class="setting-item">
-                                    <label class="setting-label">
-                                        <input type="checkbox" id="email-notifications">
-                                        <span class="checkmark"></span>
-                                        Nhận thông báo qua email
-                                    </label>
+                    <div class="content-body">
+                        <div class="settings-grid">
+                            <div class="settings-card">
+                                <div class="card-header">
+                                    <h3>
+                                        <i class="fas fa-bell"></i>
+                                        Thông báo
+                                    </h3>
                                 </div>
-                                <div class="setting-item">
-                                    <label class="setting-label">
-                                        <input type="checkbox" id="job-alerts">
-                                        <span class="checkmark"></span>
-                                        Thông báo việc làm phù hợp
-                                    </label>
-                                </div>
-                                <div class="setting-item">
-                                    <label class="setting-label">
-                                        <input type="checkbox" id="application-updates">
-                                        <span class="checkmark"></span>
-                                        Cập nhật trạng thái đơn ứng tuyển
-                                    </label>
+                                <div class="card-content">
+                                    <div class="setting-item">
+                                        <div class="setting-content">
+                                            <h4>Thông báo email</h4>
+                                            <p>Nhận thông báo qua email</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="email-notifications" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="setting-item">
+                                        <div class="setting-content">
+                                            <h4>Thông báo việc làm</h4>
+                                            <p>Việc làm phù hợp với hồ sơ</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="job-alerts" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="setting-item">
+                                        <div class="setting-content">
+                                            <h4>Cập nhật đơn ứng tuyển</h4>
+                                            <p>Thay đổi trạng thái đơn</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="application-updates" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="setting-group">
-                                <h3>Quyền riêng tư</h3>
-                                <div class="setting-item">
-                                    <label class="setting-label">
-                                        <input type="checkbox" id="profile-public">
-                                        <span class="checkmark"></span>
-                                        Cho phép nhà tuyển dụng xem hồ sơ
-                                    </label>
+                            <div class="settings-card">
+                                <div class="card-header">
+                                    <h3>
+                                        <i class="fas fa-shield-alt"></i>
+                                        Quyền riêng tư
+                                    </h3>
                                 </div>
-                                <div class="setting-item">
-                                    <label class="setting-label">
-                                        <input type="checkbox" id="show-contact">
-                                        <span class="checkmark"></span>
-                                        Hiển thị thông tin liên hệ
-                                    </label>
+                                <div class="card-content">
+                                    <div class="setting-item">
+                                        <div class="setting-content">
+                                            <h4>Hồ sơ công khai</h4>
+                                            <p>Cho phép nhà tuyển dụng xem</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="profile-public">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="setting-item">
+                                        <div class="setting-content">
+                                            <h4>Thông tin liên hệ</h4>
+                                            <p>Hiển thị số điện thoại, email</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="show-contact">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="setting-group">
-                                <h3>Bảo mật</h3>
-                                <button class="btn btn-outline">
-                                    <i class="fas fa-key"></i> Đổi mật khẩu
-                                </button>
+                            <div class="settings-card">
+                                <div class="card-header">
+                                    <h3>
+                                        <i class="fas fa-key"></i>
+                                        Bảo mật
+                                    </h3>
+                                </div>
+                                <div class="card-content">
+                                    <div class="setting-actions">
+                                        <button class="settings-btn primary">
+                                            <i class="fas fa-key"></i>
+                                            Đổi mật khẩu
+                                        </button>
+                                        <button class="settings-btn secondary">
+                                            <i class="fas fa-download"></i>
+                                            Tải dữ liệu cá nhân
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="setting-group">
-                                <h3>Tài khoản</h3>
-                                <button class="btn btn-danger">
-                                    <i class="fas fa-trash"></i> Xóa tài khoản
-                                </button>
+                            <div class="settings-card danger">
+                                <div class="card-header">
+                                    <h3>
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        Vùng nguy hiểm
+                                    </h3>
+                                </div>
+                                <div class="card-content">
+                                    <div class="setting-actions">
+                                        <button class="settings-btn danger">
+                                            <i class="fas fa-trash"></i>
+                                            Xóa tài khoản
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </section>
             </div>
         </div>
-    </section>
+    </main>
 
     <script src="../js/common.js"></script>
     <script src="../js/candidate-dashboard.js"></script>
