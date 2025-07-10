@@ -964,3 +964,17 @@ body {
     font-weight: 600;
     margin-top: 1rem;
 }
+
+.dashboard-section,
+.container,
+.dashboard-content,
+.content-section,
+.job-search-form,
+.saved-jobs-list,
+.profile-content,
+.settings-content,
+.empty-state {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+  min-height: unset !important;
+}
