@@ -45,8 +45,8 @@ function setupUserInterface() {
 }
 
 function setupNavigation() {
-    const navItems = document.querySelectorAll('.nav-item');
-    const quickActionCards = document.querySelectorAll('.quick-action-card[data-section]');
+    const navItems = document.querySelectorAll('.nav-tab');
+    const quickActionCards = document.querySelectorAll('.quick-action-item[data-section]');
     
     // Setup nav items
     navItems.forEach(item => {
@@ -82,7 +82,7 @@ function switchSection(section, pushState = true) {
     if (section === currentSection) return;
     
     // Update navigation
-    document.querySelectorAll('.nav-item').forEach(item => {
+    document.querySelectorAll('.nav-tab').forEach(item => {
         item.classList.remove('active');
         if (item.dataset.section === section) {
             item.classList.add('active');
@@ -160,6 +160,10 @@ async function loadOverviewData() {
 
 async function loadCandidateStats() {
     const statsGrid = document.getElementById('stats-grid');
+    const totalApplicationsEl = document.getElementById('total-applications');
+    const pendingApplicationsEl = document.getElementById('pending-applications');
+    const savedJobsEl = document.getElementById('saved-jobs');
+    const applicationsBadge = document.getElementById('applications-badge');
     
     try {
         // Get candidate applications
@@ -171,6 +175,13 @@ async function loadCandidateStats() {
             const interviewCount = applications.filter(app => app.status === 'interview').length;
             const acceptedCount = applications.filter(app => app.status === 'accepted').length;
             
+            // Update profile header stats
+            if (totalApplicationsEl) totalApplicationsEl.textContent = applications.length;
+            if (pendingApplicationsEl) pendingApplicationsEl.textContent = pendingCount;
+            if (savedJobsEl) savedJobsEl.textContent = '0'; // This would be from saved jobs API
+            if (applicationsBadge) applicationsBadge.textContent = applications.length;
+            
+            // Update stats grid in overview
             statsGrid.innerHTML = `
                 <div class="stat-card">
                     <i class="fas fa-file-text"></i>
@@ -195,6 +206,11 @@ async function loadCandidateStats() {
             `;
         } else {
             // Show default stats if no data
+            if (totalApplicationsEl) totalApplicationsEl.textContent = '0';
+            if (pendingApplicationsEl) pendingApplicationsEl.textContent = '0';
+            if (savedJobsEl) savedJobsEl.textContent = '0';
+            if (applicationsBadge) applicationsBadge.textContent = '0';
+            
             statsGrid.innerHTML = `
                 <div class="stat-card">
                     <i class="fas fa-file-text"></i>
@@ -342,27 +358,26 @@ function renderApplications(applications) {
         
         return `
             <div class="application-item">
-                <div class="item-header">
-                    <div>
-                        <h3 class="item-title">${app.job_title}</h3>
-                        <p class="item-company">${app.company_name}</p>
-                    </div>
+                <div class="table-cell">
+                    <div class="item-title">${app.job_title}</div>
+                    <div class="item-company">${app.company_name}</div>
+                </div>
+                <div class="table-cell">${app.company_name}</div>
+                <div class="table-cell">${RecruitmentApp.formatDate(app.applied_at)}</div>
+                <div class="table-cell">
                     <span class="item-status ${statusClass}">${statusText}</span>
                 </div>
-                <div class="item-meta">
-                    <span><i class="fas fa-calendar"></i> Ứng tuyển: ${RecruitmentApp.formatDate(app.applied_at)}</span>
-                    <span><i class="fas fa-map-marker-alt"></i> ${app.job_location}</span>
-                    ${app.salary ? `<span><i class="fas fa-money-bill"></i> ${RecruitmentApp.formatCurrency(app.salary)}</span>` : ''}
-                </div>
-                <div class="item-actions">
-                    <a href="../job-detail.html?id=${app.job_id}" class="btn btn-outline btn-sm">
-                        <i class="fas fa-eye"></i> Xem chi tiết
-                    </a>
-                    ${app.status === 'pending' ? `
-                        <button class="btn btn-danger btn-sm" onclick="withdrawApplication(${app.application_id})">
-                            <i class="fas fa-times"></i> Rút đơn
-                        </button>
-                    ` : ''}
+                <div class="table-cell">
+                    <div class="item-actions">
+                        <a href="../job-detail.html?id=${app.job_id}" class="btn btn-outline btn-sm">
+                            <i class="fas fa-eye"></i> Xem
+                        </a>
+                        ${app.status === 'pending' ? `
+                            <button class="btn btn-danger btn-sm" onclick="withdrawApplication(${app.application_id})">
+                                <i class="fas fa-times"></i> Rút
+                            </button>
+                        ` : ''}
+                    </div>
                 </div>
             </div>
         `;
@@ -548,30 +563,29 @@ async function updateProfile(e) {
     e.preventDefault();
     
     const formData = new FormData(e.target);
-    const profileData = {
-        full_name: document.getElementById('full_name').value,
-        phone: document.getElementById('phone').value,
-        location: document.getElementById('location').value,
-        experience: document.getElementById('experience').value,
-        skills: document.getElementById('skills').value,
-        education: document.getElementById('education').value
-    };
+    const updateData = Object.fromEntries(formData);
     
     try {
-        const result = await RecruitmentApp.apiCall('../../api/users.php', 'PUT', profileData);
+        const result = await RecruitmentApp.apiCall('../../api/profile.php', {
+            method: 'POST',
+            body: JSON.stringify(updateData),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
         
         if (result.success) {
-            RecruitmentApp.showAlert('Cập nhật hồ sơ thành công!', 'success');
+            RecruitmentApp.showAlert('Cập nhật hồ sơ thành công', 'success');
             // Update current user data
-            Object.assign(currentUser, profileData);
+            currentUser = { ...currentUser, ...updateData };
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            setupUserInterface(); // Refresh UI
+            setupUserInterface();
         } else {
-            RecruitmentApp.showAlert(result.message || 'Có lỗi xảy ra khi cập nhật hồ sơ', 'error');
+            RecruitmentApp.showAlert(result.message || 'Có lỗi xảy ra', 'error');
         }
     } catch (error) {
         console.error('Error updating profile:', error);
-        RecruitmentApp.showAlert('Có lỗi xảy ra khi cập nhật hồ sơ', 'error');
+        RecruitmentApp.showAlert('Có lỗi xảy ra khi cập nhật', 'error');
     }
 }
 
@@ -581,46 +595,50 @@ async function withdrawApplication(applicationId) {
     }
     
     try {
-        const result = await RecruitmentApp.apiCall(`../../api/applications.php?id=${applicationId}`, 'DELETE');
+        const result = await RecruitmentApp.apiCall('../../api/applications.php', {
+            method: 'DELETE',
+            body: JSON.stringify({ application_id: applicationId }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
         
         if (result.success) {
-            RecruitmentApp.showAlert('Đã rút đơn ứng tuyển thành công', 'success');
-            // Reload applications
-            await loadApplicationsData();
-            // Refresh overview if currently viewing
-            if (currentSection === 'overview') {
-                await loadOverviewData();
-            }
+            RecruitmentApp.showAlert('Đã rút đơn ứng tuyển', 'success');
+            loadApplicationsData(); // Reload applications
+            loadCandidateStats(); // Update stats
         } else {
-            RecruitmentApp.showAlert(result.message || 'Có lỗi xảy ra khi rút đơn', 'error');
+            RecruitmentApp.showAlert(result.message || 'Có lỗi xảy ra', 'error');
         }
     } catch (error) {
         console.error('Error withdrawing application:', error);
-        RecruitmentApp.showAlert('Có lỗi xảy ra khi rút đơn', 'error');
+        RecruitmentApp.showAlert('Có lỗi xảy ra', 'error');
     }
 }
 
 async function quickApply(jobId) {
     try {
-        const result = await RecruitmentApp.apiCall('../../api/applications.php', 'POST', {
-            job_id: jobId
+        const result = await RecruitmentApp.apiCall('../../api/applications.php', {
+            method: 'POST',
+            body: JSON.stringify({ job_id: jobId }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
         });
         
         if (result.success) {
-            RecruitmentApp.showAlert('Ứng tuyển thành công!', 'success');
-            // Refresh search results or redirect to applications
-            switchSection('applications');
+            RecruitmentApp.showAlert('Ứng tuyển thành công', 'success');
+            loadCandidateStats(); // Update stats
         } else {
-            RecruitmentApp.showAlert(result.message || 'Có lỗi xảy ra khi ứng tuyển', 'error');
+            RecruitmentApp.showAlert(result.message || 'Có lỗi xảy ra', 'error');
         }
     } catch (error) {
         console.error('Error applying for job:', error);
-        RecruitmentApp.showAlert('Có lỗi xảy ra khi ứng tuyển', 'error');
+        RecruitmentApp.showAlert('Có lỗi xảy ra', 'error');
     }
 }
 
 function cancelEdit() {
-    // Reload profile data
     loadProfileData();
 }
 
