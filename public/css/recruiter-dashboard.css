@@ -19,6 +19,64 @@
     --transition: all 0.3s ease;
 }
 
+/* Header and Navigation Fixes */
+.header .nav-menu {
+    display: flex !important;
+    list-style: none;
+    align-items: center;
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+}
+
+.header .nav-menu li {
+    list-style: none;
+    margin: 0;
+}
+
+.header .nav-menu a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    transition: color 0.3s;
+    padding: 0.5rem 0;
+    display: block;
+}
+
+.header .nav-menu a:hover,
+.header .nav-menu a.active {
+    color: #2c5aa0;
+}
+
+.header .auth-buttons {
+    display: flex !important;
+    align-items: center;
+    gap: 1rem;
+    list-style: none;
+}
+
+.header .welcome-text {
+    color: #2c5aa0;
+    font-weight: 600;
+    margin-right: 1rem;
+    white-space: nowrap;
+}
+
+.header .navbar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.header .nav-brand h1 {
+    color: #2c5aa0;
+    font-size: 1.8rem;
+    margin: 0;
+}
+
 /* Layout Improvements */
 .container-fluid {
     max-width: 1400px;
@@ -165,6 +223,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-top: auto;
     margin-bottom: 2rem;
     padding: 1.5rem 2rem;
     background: white;
@@ -1163,15 +1222,6 @@
 .job-preview-content {
     max-width: 800px;
     width: 90%;
-}
-
-.modal-footer {
-    padding: 1rem 2rem;
-    border-top: 1px solid var(--border-color);
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-    background: var(--light-color);
 }
 
 #job-preview-content {
