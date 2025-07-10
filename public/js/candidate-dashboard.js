@@ -45,16 +45,33 @@ function setupUserInterface() {
 }
 
 function setupNavigation() {
-    const navItems = document.querySelectorAll('.nav-tab');
+    const navItems = document.querySelectorAll('.nav-item[data-section]');
     const quickActionCards = document.querySelectorAll('.quick-action-item[data-section]');
+    const viewAllLinks = document.querySelectorAll('.view-all-link[data-section]');
     
-    // Setup nav items
+    // Setup nav items - immediate response on click
     navItems.forEach(item => {
         item.addEventListener('click', function(e) {
             e.preventDefault();
             const section = this.dataset.section;
             if (section) {
+                // Immediate visual feedback
+                updateNavActiveState(section);
+                // Then switch content
                 switchSection(section);
+            }
+        });
+        
+        // Add hover effects for better UX
+        item.addEventListener('mouseenter', function() {
+            if (!this.classList.contains('active')) {
+                this.style.transform = 'translateX(4px)';
+            }
+        });
+        
+        item.addEventListener('mouseleave', function() {
+            if (!this.classList.contains('active')) {
+                this.style.transform = 'translateX(0)';
             }
         });
     });
@@ -65,6 +82,19 @@ function setupNavigation() {
             e.preventDefault();
             const section = this.dataset.section;
             if (section) {
+                updateNavActiveState(section);
+                switchSection(section);
+            }
+        });
+    });
+    
+    // Setup view all links
+    viewAllLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const section = this.dataset.section;
+            if (section) {
+                updateNavActiveState(section);
                 switchSection(section);
             }
         });
@@ -73,7 +103,18 @@ function setupNavigation() {
     // Handle browser back/forward
     window.addEventListener('popstate', function(e) {
         if (e.state && e.state.section) {
+            updateNavActiveState(e.state.section);
             switchSection(e.state.section, false);
+        }
+    });
+}
+
+function updateNavActiveState(activeSection) {
+    // Immediately update active states for visual feedback
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+        if (item.dataset.section === activeSection) {
+            item.classList.add('active');
         }
     });
 }
@@ -81,22 +122,22 @@ function setupNavigation() {
 function switchSection(section, pushState = true) {
     if (section === currentSection) return;
     
-    // Update navigation
-    document.querySelectorAll('.nav-tab').forEach(item => {
-        item.classList.remove('active');
-        if (item.dataset.section === section) {
-            item.classList.add('active');
-        }
-    });
+    // Add smooth transition effect
+    const contentArea = document.querySelector('.dashboard-content');
+    contentArea.style.opacity = '0.7';
     
-    // Update content sections
-    document.querySelectorAll('.content-section').forEach(section => {
-        section.classList.remove('active');
+    // Update content sections with smooth transition
+    document.querySelectorAll('.content-section').forEach(contentSection => {
+        contentSection.classList.remove('active');
     });
     
     const targetSection = document.getElementById(`${section}-section`);
     if (targetSection) {
-        targetSection.classList.add('active');
+        // Small delay for smooth transition effect
+        setTimeout(() => {
+            targetSection.classList.add('active');
+            contentArea.style.opacity = '1';
+        }, 150);
     }
     
     // Update URL
@@ -369,11 +410,11 @@ function renderApplications(applications) {
                 </div>
                 <div class="table-cell">
                     <div class="item-actions">
-                        <a href="../job-detail.html?id=${app.job_id}" class="btn btn-outline btn-sm">
-                            <i class="fas fa-eye"></i> Xem
+                        <a href="../job-detail.html?id=${app.job_id}" class="btn btn-outline btn-sm view-detail-btn" data-job-id="${app.job_id}">
+                            <i class="fas fa-eye"></i> Xem chi tiết
                         </a>
                         ${app.status === 'pending' ? `
-                            <button class="btn btn-danger btn-sm" onclick="withdrawApplication(${app.application_id})">
+                            <button class="btn btn-danger btn-sm withdraw-btn" data-application-id="${app.application_id}">
                                 <i class="fas fa-times"></i> Rút
                             </button>
                         ` : ''}
@@ -384,6 +425,9 @@ function renderApplications(applications) {
     }).join('');
     
     applicationsList.innerHTML = html;
+    
+    // Setup event listeners for applications
+    setupApplicationsEventListeners();
 }
 
 async function loadSavedJobsData() {
@@ -450,9 +494,9 @@ async function searchJobs(keyword, location, category) {
         
         if (result.success && result.data.length > 0) {
             const jobsHtml = result.data.map(job => `
-                <div class="job-search-item">
+                <div class="job-search-item" data-job-id="${job.id}">
                     <div class="job-header">
-                        <h3><a href="../job-detail.html?id=${job.id}">${job.title}</a></h3>
+                        <h3><a href="../job-detail.html?id=${job.id}" class="job-title-link" data-job-id="${job.id}">${job.title}</a></h3>
                         <p class="company">${job.company_name}</p>
                     </div>
                     <div class="job-meta">
@@ -464,8 +508,12 @@ async function searchJobs(keyword, location, category) {
                         <p>${job.description.substring(0, 150)}...</p>
                     </div>
                     <div class="job-actions">
-                        <a href="../job-detail.html?id=${job.id}" class="btn btn-outline btn-sm">Xem chi tiết</a>
-                        <button class="btn btn-primary btn-sm" onclick="quickApply(${job.id})">Ứng tuyển ngay</button>
+                        <a href="../job-detail.html?id=${job.id}" class="btn btn-outline btn-sm view-detail-btn" data-job-id="${job.id}">
+                            <i class="fas fa-eye"></i> Xem chi tiết
+                        </a>
+                        <button class="btn btn-primary btn-sm apply-btn" data-job-id="${job.id}">
+                            <i class="fas fa-paper-plane"></i> Ứng tuyển ngay
+                        </button>
                     </div>
                 </div>
             `).join('');
@@ -478,6 +526,9 @@ async function searchJobs(keyword, location, category) {
                     ${jobsHtml}
                 </div>
             `;
+            
+            // Add event listeners after HTML is created
+            setupJobSearchEventListeners();
         } else {
             resultsContainer.innerHTML = `
                 <div class="empty-state">
@@ -616,25 +667,335 @@ async function withdrawApplication(applicationId) {
     }
 }
 
-async function quickApply(jobId) {
+async function quickApply(jobId, buttonElement = null) {
+    console.log('quickApply called with jobId:', jobId, 'buttonElement:', buttonElement);
+    
     try {
-        const result = await RecruitmentApp.apiCall('../../api/applications.php', {
-            method: 'POST',
-            body: JSON.stringify({ job_id: jobId }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
+        // Validate jobId
+        if (!jobId) {
+            console.error('Job ID is missing');
+            RecruitmentApp.showAlert('Không tìm thấy thông tin công việc', 'error');
+            return;
+        }
         
-        if (result.success) {
-            RecruitmentApp.showAlert('Ứng tuyển thành công', 'success');
-            loadCandidateStats(); // Update stats
-        } else {
-            RecruitmentApp.showAlert(result.message || 'Có lỗi xảy ra', 'error');
+        // Find the button element if not provided
+        if (!buttonElement) {
+            buttonElement = document.querySelector(`button.apply-btn[data-job-id="${jobId}"]`);
+            console.log('Found button element:', buttonElement);
+        }
+        
+        // Show confirmation dialog
+        console.log('Showing apply confirmation modal...');
+        const confirmed = await showQuickApplyModal(jobId);
+        if (!confirmed) {
+            console.log('User cancelled application');
+            return;
+        }
+        
+        // Check if already applied
+        try {
+            const checkResult = await RecruitmentApp.apiCall(`../../api/applications.php?check_applied=1&job_id=${jobId}`);
+            if (checkResult.success && checkResult.already_applied) {
+                RecruitmentApp.showAlert('Bạn đã ứng tuyển công việc này rồi', 'warning');
+                return;
+            }
+        } catch (error) {
+            console.error('Error checking application status:', error);
+        }
+        
+        // Update button to loading state
+        const originalText = buttonElement ? buttonElement.innerHTML : '';
+        if (buttonElement) {
+            buttonElement.disabled = true;
+            buttonElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang ứng tuyển...';
+            buttonElement.classList.add('loading');
+        }
+        
+        try {
+            const result = await RecruitmentApp.apiCall('../../api/applications.php', {
+                method: 'POST',
+                body: JSON.stringify({ job_id: jobId }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (result.success) {
+                // Success feedback
+                if (buttonElement) {
+                    buttonElement.innerHTML = '<i class="fas fa-check"></i> Đã ứng tuyển';
+                    buttonElement.classList.remove('btn-primary');
+                    buttonElement.classList.add('btn-success');
+                    
+                    // Auto reset after 3 seconds
+                    setTimeout(() => {
+                        buttonElement.innerHTML = '<i class="fas fa-eye"></i> Xem đơn';
+                        buttonElement.classList.remove('btn-success');
+                        buttonElement.classList.add('btn-outline');
+                        buttonElement.onclick = () => switchSection('applications');
+                    }, 3000);
+                }
+                
+                RecruitmentApp.showAlert('Ứng tuyển thành công! 🎉', 'success');
+                loadCandidateStats(); // Update stats
+                loadCandidateActivity(); // Refresh activity
+                
+                // Show success modal with next steps
+                showApplicationSuccessModal(result.application_id);
+                
+            } else {
+                throw new Error(result.message || 'Có lỗi xảy ra');
+            }
+        } catch (error) {
+            console.error('Error applying for job:', error);
+            RecruitmentApp.showAlert(error.message || 'Có lỗi xảy ra khi ứng tuyển', 'error');
+            
+            // Reset button on error
+            if (buttonElement) {
+                buttonElement.disabled = false;
+                buttonElement.innerHTML = originalText;
+                buttonElement.classList.remove('loading');
+            }
         }
     } catch (error) {
-        console.error('Error applying for job:', error);
+        console.error('Error in quickApply function:', error);
         RecruitmentApp.showAlert('Có lỗi xảy ra', 'error');
+    }
+}
+
+async function showQuickApplyModal(jobId) {
+    return new Promise((resolve) => {
+        // Create modal HTML
+        const modalHtml = `
+            <div id="quick-apply-modal" class="modal-overlay">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-paper-plane"></i> Xác nhận ứng tuyển</h3>
+                        <button class="modal-close" onclick="closeQuickApplyModal(false)">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="apply-confirmation">
+                            <div class="confirmation-icon">
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                            <h4>Bạn có muốn ứng tuyển công việc này không?</h4>
+                            <p>Đơn ứng tuyển sẽ được gửi đến nhà tuyển dụng với thông tin hồ sơ hiện tại của bạn.</p>
+                            <div class="profile-preview">
+                                <div class="preview-item">
+                                    <i class="fas fa-user"></i>
+                                    <span>${currentUser.full_name || 'Chưa cập nhật'}</span>
+                                </div>
+                                <div class="preview-item">
+                                    <i class="fas fa-envelope"></i>
+                                    <span>${currentUser.email}</span>
+                                </div>
+                                <div class="preview-item">
+                                    <i class="fas fa-phone"></i>
+                                    <span>${currentUser.phone || 'Chưa cập nhật'}</span>
+                                </div>
+                            </div>
+                            ${(!currentUser.full_name || !currentUser.phone) ? 
+                                '<div class="warning-note"><i class="fas fa-exclamation-triangle"></i> Khuyến nghị hoàn thiện hồ sơ để tăng cơ hội được nhận.</div>' 
+                                : ''
+                            }
+                        </div>
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn btn-outline" onclick="closeQuickApplyModal(false)">
+                            <i class="fas fa-times"></i> Hủy
+                        </button>
+                        ${(!currentUser.full_name || !currentUser.phone) ? 
+                            `<button class="btn btn-secondary" onclick="closeQuickApplyModal(false); switchSection('profile');">
+                                <i class="fas fa-edit"></i> Hoàn thiện hồ sơ
+                            </button>`
+                            : ''
+                        }
+                        <button class="btn btn-primary" onclick="closeQuickApplyModal(true)">
+                            <i class="fas fa-paper-plane"></i> Xác nhận ứng tuyển
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Add modal to page
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        
+        // Store resolve function globally
+        window.quickApplyResolve = resolve;
+        
+        // Show modal with animation
+        setTimeout(() => {
+            document.getElementById('quick-apply-modal').classList.add('show');
+        }, 10);
+    });
+}
+
+function closeQuickApplyModal(confirmed) {
+    const modal = document.getElementById('quick-apply-modal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.remove();
+            if (window.quickApplyResolve) {
+                window.quickApplyResolve(confirmed);
+                delete window.quickApplyResolve;
+            }
+        }, 300);
+    }
+}
+
+function showApplicationSuccessModal(applicationId) {
+    const modalHtml = `
+        <div id="success-modal" class="modal-overlay show">
+            <div class="modal-content success-modal">
+                <div class="modal-header success">
+                    <h3><i class="fas fa-check-circle"></i> Ứng tuyển thành công!</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="success-content">
+                        <div class="success-animation">
+                            <div class="checkmark">
+                                <i class="fas fa-check"></i>
+                            </div>
+                        </div>
+                        <h4>Đơn ứng tuyển đã được gửi đi!</h4>
+                        <p>Nhà tuyển dụng sẽ xem xét đơn của bạn và phản hồi trong thời gian sớm nhất.</p>
+                        <div class="next-steps">
+                            <h5>Bước tiếp theo:</h5>
+                            <ul>
+                                <li><i class="fas fa-bell"></i> Chúng tôi sẽ thông báo khi có cập nhật</li>
+                                <li><i class="fas fa-search"></i> Tiếp tục tìm kiếm cơ hội khác</li>
+                                <li><i class="fas fa-user-edit"></i> Hoàn thiện hồ sơ để tăng cơ hội</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-outline" onclick="closeSuccessModal()">
+                        <i class="fas fa-search"></i> Tiếp tục tìm việc
+                    </button>
+                    <button class="btn btn-primary" onclick="closeSuccessModal(); switchSection('applications');">
+                        <i class="fas fa-list"></i> Xem đơn ứng tuyển
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    
+    // Auto close after 10 seconds
+    setTimeout(() => {
+        closeSuccessModal();
+    }, 10000);
+}
+
+function closeSuccessModal() {
+    const modal = document.getElementById('success-modal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => modal.remove(), 300);
+    }
+}
+
+// Setup event listeners for job search results
+function setupJobSearchEventListeners() {
+    console.log('Setting up job search event listeners...');
+    
+    // View detail buttons
+    const viewDetailButtons = document.querySelectorAll('.view-detail-btn, .job-title-link');
+    console.log(`Found ${viewDetailButtons.length} view detail buttons`);
+    
+    viewDetailButtons.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const jobId = this.dataset.jobId;
+            console.log('View detail clicked for job:', jobId);
+            viewJobDetail(jobId, e);
+        });
+    });
+    
+    // Apply buttons
+    const applyButtons = document.querySelectorAll('.apply-btn');
+    console.log(`Found ${applyButtons.length} apply buttons`);
+    
+    applyButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const jobId = this.dataset.jobId;
+            console.log('Apply clicked for job:', jobId);
+            quickApply(jobId, this);
+        });
+    });
+}
+
+// Setup event listeners for applications section
+function setupApplicationsEventListeners() {
+    // View detail buttons
+    document.querySelectorAll('.applications-list .view-detail-btn').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const jobId = this.dataset.jobId;
+            viewJobDetail(jobId, e);
+        });
+    });
+    
+    // Withdraw buttons
+    document.querySelectorAll('.withdraw-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const applicationId = this.dataset.applicationId;
+            withdrawApplication(applicationId);
+        });
+    });
+}
+
+// Enhanced view details function
+function viewJobDetail(jobId, event = null) {
+    console.log('viewJobDetail called with jobId:', jobId);
+    
+    try {
+        if (event) {
+            event.preventDefault();
+        }
+        
+        // Validate jobId
+        if (!jobId) {
+            console.error('Job ID is missing');
+            RecruitmentApp.showAlert('Không tìm thấy thông tin công việc', 'error');
+            return;
+        }
+        
+        // Add loading state to the clicked button
+        const button = event ? event.currentTarget : null;
+        if (button) {
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tải...';
+            button.disabled = true;
+            
+            // Restore button after navigation
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }, 500);
+        }
+        
+        // Store current search context for back navigation
+        sessionStorage.setItem('returnToSearch', JSON.stringify({
+            section: currentSection,
+            timestamp: Date.now()
+        }));
+        
+        // Navigate to job detail with smooth transition
+        console.log('Navigating to job detail page...');
+        window.location.href = `../job-detail.html?id=${jobId}`;
+        
+    } catch (error) {
+        console.error('Error in viewJobDetail:', error);
+        RecruitmentApp.showAlert('Có lỗi xảy ra khi mở chi tiết công việc', 'error');
     }
 }
 
@@ -646,3 +1007,8 @@ function cancelEdit() {
 window.withdrawApplication = withdrawApplication;
 window.quickApply = quickApply;
 window.cancelEdit = cancelEdit;
+window.viewJobDetail = viewJobDetail;
+window.closeQuickApplyModal = closeQuickApplyModal;
+window.closeSuccessModal = closeSuccessModal;
+window.setupJobSearchEventListeners = setupJobSearchEventListeners;
+window.setupApplicationsEventListeners = setupApplicationsEventListeners;
