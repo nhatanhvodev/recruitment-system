@@ -28,7 +28,7 @@
 
 .dashboard-section {
     padding: 120px 0 60px;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background: linear-gradient(135deg, #2c5aa0 0%, #1e3f73 100%);
     min-height: 100vh;
 }
 
@@ -132,6 +132,10 @@
     z-index: 1000;
     display: none;
     overflow: hidden;
+}
+
+.user-dropdown.show {
+    display: block;
 }
 
 .dropdown-item {
@@ -450,6 +454,84 @@
     font-weight: 500;
 }
 
+/* Button Styles */
+.btn {
+    display: inline-block;
+    padding: 0.5rem 1.5rem;
+    border: none;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+}
+
+.btn-outline:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-success {
+    background: var(--success-color);
+    color: white;
+}
+
+.btn-success:hover {
+    background: #218838;
+}
+
+.btn-sm {
+    padding: 0.375rem 1rem;
+    font-size: 0.8rem;
+    border-radius: 20px;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--dark-color);
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: var(--transition);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
+}
+
 /* Overview Grid */
 .overview-grid {
     display: grid;
@@ -497,66 +579,61 @@
     padding: 1.25rem;
 }
 
-/* Jobs Grid */
+/* Jobs Grid & Applicants Grid */
 .jobs-grid, .applicants-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 1.5rem;
 }
 
-.job-card {
+.job-card, .applicant-card {
     background: white;
-    border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
+    box-shadow: var(--shadow-light);
     padding: 1.5rem;
     transition: var(--transition);
-    position: relative;
-    overflow: hidden;
+    border: 1px solid var(--border-color);
 }
 
-.job-card:hover {
-    border-color: var(--primary-color);
-    box-shadow: var(--shadow-medium);
+.job-card:hover, .applicant-card:hover {
     transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
 }
 
 .job-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
     margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .job-title {
+    margin: 0 0 0.5rem 0;
     font-size: 1.2rem;
     font-weight: 600;
     color: var(--dark-color);
-    margin: 0 0 0.5rem 0;
-    line-height: 1.3;
 }
 
 .job-meta {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
-    margin-bottom: 1rem;
-    font-size: 0.85rem;
     color: #666;
+    font-size: 0.85rem;
 }
 
 .job-meta span {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.25rem;
 }
 
 .job-status {
-    padding: 0.3rem 0.75rem;
-    border-radius: 15px;
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
     font-size: 0.75rem;
-    font-weight: 600;
+    font-weight: 500;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
 }
 
 .status-active {
@@ -570,13 +647,13 @@
 }
 
 .status-draft {
-    background: #e2e3e5;
-    color: #383d41;
+    background: #f8d7da;
+    color: #721c24;
 }
 
 .status-expired {
-    background: #f8d7da;
-    color: #721c24;
+    background: #e2e3e5;
+    color: #6c757d;
 }
 
 .job-actions {
@@ -587,15 +664,11 @@
 
 /* Applicant Cards */
 .applicant-card {
-    background: white;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    padding: 1.5rem;
-    transition: var(--transition);
+    position: relative;
 }
 
 .applicant-card:hover {
-    border-color: var(--primary-color);
+    transform: translateY(-2px);
     box-shadow: var(--shadow-medium);
 }
 
@@ -609,20 +682,21 @@
 .applicant-avatar {
     width: 50px;
     height: 50px;
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
     border-radius: 50%;
+    background: var(--primary-color);
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
+    font-weight: 600;
     font-size: 1.2rem;
 }
 
 .applicant-info h4 {
     margin: 0 0 0.25rem 0;
-    color: var(--dark-color);
     font-size: 1.1rem;
     font-weight: 600;
+    color: var(--dark-color);
 }
 
 .applicant-info p {
@@ -632,41 +706,71 @@
 }
 
 .applicant-status {
-    margin-left: auto;
-    padding: 0.4rem 0.8rem;
-    border-radius: 15px;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
     font-size: 0.75rem;
-    font-weight: 600;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.applicant-status.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.applicant-status.status-reviewed {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.applicant-status.status-interview {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.applicant-status.status-accepted {
+    background: #d4edda;
+    color: #155724;
+}
+
+.applicant-status.status-rejected {
+    background: #f8d7da;
+    color: #721c24;
 }
 
 .applicant-job {
-    margin-bottom: 1rem;
-    padding: 0.75rem;
     background: var(--light-color);
+    padding: 0.75rem;
     border-radius: 6px;
+    margin: 1rem 0;
     font-size: 0.9rem;
+    color: #666;
 }
 
 .applicant-actions {
     display: flex;
     gap: 0.5rem;
+    margin-top: 1rem;
 }
 
-/* Modals */
+/* Modal Styles */
 .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.5);
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 9999;
     opacity: 0;
     visibility: hidden;
-    transition: var(--transition);
+    transition: all 0.3s ease;
 }
 
 .modal-overlay.active {
@@ -677,13 +781,13 @@
 .modal-container {
     background: white;
     border-radius: var(--border-radius);
+    box-shadow: var(--shadow-heavy);
     max-width: 600px;
     width: 90%;
     max-height: 90vh;
     overflow-y: auto;
-    box-shadow: var(--shadow-heavy);
     transform: scale(0.9);
-    transition: var(--transition);
+    transition: transform 0.3s ease;
 }
 
 .modal-overlay.active .modal-container {
@@ -725,7 +829,7 @@
 
 .modal-close:hover {
     background: var(--light-color);
-    color: var(--danger-color);
+    color: var(--dark-color);
 }
 
 .modal-body {
@@ -737,27 +841,29 @@
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.5);
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 10000;
+    z-index: 9999;
 }
 
 .loading-spinner {
-    background: white;
-    border-radius: var(--border-radius);
-    padding: 2rem;
     text-align: center;
-    box-shadow: var(--shadow-heavy);
+    color: var(--primary-color);
 }
 
 .loading-spinner i {
     font-size: 2rem;
-    color: var(--primary-color);
     margin-bottom: 1rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 /* Responsive Design */
@@ -767,7 +873,7 @@
     }
     
     .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     }
     
     .overview-grid {
@@ -783,13 +889,11 @@
     .quick-actions-bar {
         flex-direction: column;
         gap: 1rem;
-        align-items: stretch;
-        padding: 1rem;
+        text-align: center;
     }
     
     .page-title {
         font-size: 1.5rem;
-        text-align: center;
     }
     
     .quick-actions-right {
@@ -797,12 +901,13 @@
     }
     
     .tab-nav {
-        flex-direction: column;
-        gap: 0.5rem;
+        overflow-x: auto;
+        padding: 0.25rem;
     }
     
     .tab-btn {
-        flex: none;
+        flex-shrink: 0;
+        min-width: 120px;
     }
     
     .stats-grid {
@@ -811,18 +916,17 @@
     
     .tab-header {
         flex-direction: column;
-        gap: 1rem;
         align-items: stretch;
+        gap: 1rem;
     }
     
     .tab-actions {
-        flex-direction: column;
-        gap: 0.75rem;
+        justify-content: center;
     }
     
     .filter-group {
-        flex-direction: column;
-        gap: 0.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
     }
     
     .jobs-grid, .applicants-grid {
@@ -830,8 +934,8 @@
     }
     
     .modal-container {
-        width: 95%;
-        max-height: 95vh;
+        margin: 1rem;
+        width: calc(100% - 2rem);
     }
 }
 

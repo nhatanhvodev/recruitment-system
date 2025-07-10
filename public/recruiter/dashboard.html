@@ -4,51 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recruiter Dashboard - JobPortal</title>
+    <!-- Load Font Awesome first -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Load base styles -->
     <link rel="stylesheet" href="css/style.css">
+    <!-- Load dashboard-specific styles (will override base styles) -->
     <link rel="stylesheet" href="css/recruiter-dashboard.css">
-    <!-- Custom styles to ensure recruiter dashboard styles take precedence -->
-    <style>
-        /* Force recruiter dashboard styles to override */
-        body .dashboard-section {
-            background: linear-gradient(135deg, #2c5aa0 0%, #1e3f73 100%) !important;
-            padding: 120px 0 60px !important;
-            min-height: 100vh !important;
-        }
-        
-        body .container-fluid {
-            max-width: 1400px !important;
-            margin: 0 auto !important;
-            padding: 0 20px !important;
-        }
-        
-        body .quick-actions-bar {
-            display: flex !important;
-            justify-content: space-between !important;
-            align-items: center !important;
-            margin-bottom: 2rem !important;
-            padding: 1.5rem 2rem !important;
-            background: white !important;
-            border-radius: 12px !important;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
-        }
-        
-        body .dashboard-tabs .tab-nav {
-            display: flex !important;
-            background: white !important;
-            border-radius: 12px !important;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
-            padding: 0.5rem !important;
-            gap: 0.25rem !important;
-        }
-        
-        body .dashboard-main {
-            background: white !important;
-            border-radius: 12px !important;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
-            overflow: hidden !important;
-        }
-    </style>
 </head>
 <body>
     <!-- Header -->
@@ -64,7 +25,7 @@
                     <li class="nav-notifications">
                         <button class="notification-btn" id="notification-btn">
                             <i class="fas fa-bell"></i>
-                            <span class="notification-badge" id="notification-count">0</span>
+                            <span class="notification-badge" id="notification-count">3</span>
                         </button>
                         <div class="notification-dropdown" id="notification-dropdown">
                             <div class="notification-header">
@@ -82,7 +43,7 @@
                                 <div class="user-avatar">
                                     <i class="fas fa-user"></i>
                                 </div>
-                                <span id="user-name" class="user-name"></span>
+                                <span id="user-name" class="user-name">Recruiter Name</span>
                                 <i class="fas fa-chevron-down"></i>
                             </button>
                             <div class="user-dropdown">
@@ -142,12 +103,12 @@
                     <button class="tab-btn" data-tab="jobs">
                         <i class="fas fa-briefcase"></i>
                         Tin tuyển dụng
-                        <span class="tab-badge" id="jobs-count">0</span>
+                        <span class="tab-badge" id="jobs-count">3</span>
                     </button>
                     <button class="tab-btn" data-tab="applicants">
                         <i class="fas fa-users"></i>
                         Ứng viên
-                        <span class="tab-badge pending" id="pending-applicants">0</span>
+                        <span class="tab-badge pending" id="pending-applicants">5</span>
                     </button>
                     <button class="tab-btn" data-tab="analytics">
                         <i class="fas fa-chart-bar"></i>
@@ -171,7 +132,7 @@
                                 <i class="fas fa-briefcase"></i>
                             </div>
                             <div class="stat-content">
-                                <h3 id="total-jobs">0</h3>
+                                <h3 id="total-jobs">3</h3>
                                 <p>Tổng tin đăng</p>
                                 <div class="stat-trend">
                                     <i class="fas fa-arrow-up"></i>
@@ -185,7 +146,7 @@
                                 <i class="fas fa-eye"></i>
                             </div>
                             <div class="stat-content">
-                                <h3 id="total-views">0</h3>
+                                <h3 id="total-views">105</h3>
                                 <p>Lượt xem</p>
                                 <div class="stat-trend">
                                     <i class="fas fa-arrow-up"></i>
@@ -199,7 +160,7 @@
                                 <i class="fas fa-user-plus"></i>
                             </div>
                             <div class="stat-content">
-                                <h3 id="total-applicants">0</h3>
+                                <h3 id="total-applicants">25</h3>
                                 <p>Ứng viên</p>
                                 <div class="stat-trend">
                                     <i class="fas fa-arrow-up"></i>
@@ -213,7 +174,7 @@
                                 <i class="fas fa-handshake"></i>
                             </div>
                             <div class="stat-content">
-                                <h3 id="total-hired">0</h3>
+                                <h3 id="total-hired">2</h3>
                                 <p>Đã tuyển</p>
                                 <div class="stat-trend">
                                     <i class="fas fa-arrow-up"></i>
@@ -233,7 +194,33 @@
                             </div>
                             <div class="card-content">
                                 <div id="recent-applicants" class="recent-list">
-                                    <!-- Recent applicants will be loaded here -->
+                                    <div class="recent-item" style="padding: 0.75rem; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 0.75rem;">
+                                        <div class="applicant-avatar" style="width: 40px; height: 40px; background: #2c5aa0; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
+                                            N
+                                        </div>
+                                        <div class="item-info">
+                                            <p style="margin: 0; font-weight: 500; color: #343a40;">Nguyễn Văn A</p>
+                                            <small style="color: #666;">Ứng tuyển vị trí Developer - 2 giờ trước</small>
+                                        </div>
+                                    </div>
+                                    <div class="recent-item" style="padding: 0.75rem; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 0.75rem;">
+                                        <div class="applicant-avatar" style="width: 40px; height: 40px; background: #28a745; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
+                                            T
+                                        </div>
+                                        <div class="item-info">
+                                            <p style="margin: 0; font-weight: 500; color: #343a40;">Trần Thị B</p>
+                                            <small style="color: #666;">Ứng tuyển vị trí Designer - 1 ngày trước</small>
+                                        </div>
+                                    </div>
+                                    <div class="recent-item" style="padding: 0.75rem; display: flex; align-items: center; gap: 0.75rem;">
+                                        <div class="applicant-avatar" style="width: 40px; height: 40px; background: #17a2b8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
+                                            L
+                                        </div>
+                                        <div class="item-info">
+                                            <p style="margin: 0; font-weight: 500; color: #343a40;">Lê Văn C</p>
+                                            <small style="color: #666;">Ứng tuyển vị trí Marketing - 2 ngày trước</small>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -251,8 +238,12 @@
                                 </div>
                             </div>
                             <div class="card-content">
-                                <div id="performance-chart" class="chart-container">
-                                    <!-- Chart will be rendered here -->
+                                <div id="performance-chart" class="chart-container" style="height: 200px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 8px;">
+                                    <div style="text-align: center; color: #666;">
+                                        <i class="fas fa-chart-area" style="font-size: 2rem; margin-bottom: 0.5rem; color: #2c5aa0;"></i>
+                                        <p style="margin: 0; font-size: 0.9rem;">Biểu đồ hiệu suất</p>
+                                        <small style="color: #999;">Dữ liệu sẽ được cập nhật tự động</small>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -265,7 +256,36 @@
                             </div>
                             <div class="card-content">
                                 <div id="hot-jobs" class="hot-jobs-list">
-                                    <!-- Hot jobs will be loaded here -->
+                                    <div class="hot-job-item" style="padding: 1rem; border-bottom: 1px solid #eee;">
+                                        <div class="job-info">
+                                            <h4 style="margin: 0 0 0.5rem 0; color: #2c5aa0;">Tuyển Developer Frontend</h4>
+                                            <p style="margin: 0; color: #666; font-size: 0.9rem;">Công ty ABC Tech</p>
+                                        </div>
+                                        <div class="job-stats" style="margin-top: 0.5rem; display: flex; gap: 1rem; color: #666; font-size: 0.8rem;">
+                                            <span class="views">👁 45 lượt xem</span>
+                                            <span class="applicants">👤 12 ứng viên</span>
+                                        </div>
+                                    </div>
+                                    <div class="hot-job-item" style="padding: 1rem; border-bottom: 1px solid #eee;">
+                                        <div class="job-info">
+                                            <h4 style="margin: 0 0 0.5rem 0; color: #2c5aa0;">Nhân viên Marketing</h4>
+                                            <p style="margin: 0; color: #666; font-size: 0.9rem;">Startup XYZ</p>
+                                        </div>
+                                        <div class="job-stats" style="margin-top: 0.5rem; display: flex; gap: 1rem; color: #666; font-size: 0.8rem;">
+                                            <span class="views">👁 32 lượt xem</span>
+                                            <span class="applicants">👤 8 ứng viên</span>
+                                        </div>
+                                    </div>
+                                    <div class="hot-job-item" style="padding: 1rem;">
+                                        <div class="job-info">
+                                            <h4 style="margin: 0 0 0.5rem 0; color: #2c5aa0;">Graphic Designer</h4>
+                                            <p style="margin: 0; color: #666; font-size: 0.9rem;">Creative Agency DEF</p>
+                                        </div>
+                                        <div class="job-stats" style="margin-top: 0.5rem; display: flex; gap: 1rem; color: #666; font-size: 0.8rem;">
+                                            <span class="views">👁 28 lượt xem</span>
+                                            <span class="applicants">👤 5 ứng viên</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -298,7 +318,54 @@
 
                     <div class="jobs-container">
                         <div id="jobs-list" class="jobs-grid">
-                            <!-- Jobs will be loaded here -->
+                            <!-- Sample job cards -->
+                            <div class="job-card">
+                                <div class="job-card-header">
+                                    <h3 class="job-title">Frontend Developer</h3>
+                                    <span class="job-status status-active">Đang hoạt động</span>
+                                </div>
+                                <div class="job-meta">
+                                    <span><i class="fas fa-calendar"></i> Đăng 3 ngày trước</span>
+                                    <span><i class="fas fa-eye"></i> 45 lượt xem</span>
+                                    <span><i class="fas fa-users"></i> 12 ứng viên</span>
+                                </div>
+                                <div class="job-actions">
+                                    <button class="btn btn-outline btn-sm">Xem chi tiết</button>
+                                    <button class="btn btn-primary btn-sm">Chỉnh sửa</button>
+                                </div>
+                            </div>
+
+                            <div class="job-card">
+                                <div class="job-card-header">
+                                    <h3 class="job-title">Marketing Executive</h3>
+                                    <span class="job-status status-pending">Chờ duyệt</span>
+                                </div>
+                                <div class="job-meta">
+                                    <span><i class="fas fa-calendar"></i> Đăng 1 ngày trước</span>
+                                    <span><i class="fas fa-eye"></i> 32 lượt xem</span>
+                                    <span><i class="fas fa-users"></i> 8 ứng viên</span>
+                                </div>
+                                <div class="job-actions">
+                                    <button class="btn btn-outline btn-sm">Xem chi tiết</button>
+                                    <button class="btn btn-primary btn-sm">Chỉnh sửa</button>
+                                </div>
+                            </div>
+
+                            <div class="job-card">
+                                <div class="job-card-header">
+                                    <h3 class="job-title">Graphic Designer</h3>
+                                    <span class="job-status status-active">Đang hoạt động</span>
+                                </div>
+                                <div class="job-meta">
+                                    <span><i class="fas fa-calendar"></i> Đăng 5 ngày trước</span>
+                                    <span><i class="fas fa-eye"></i> 28 lượt xem</span>
+                                    <span><i class="fas fa-users"></i> 5 ứng viên</span>
+                                </div>
+                                <div class="job-actions">
+                                    <button class="btn btn-outline btn-sm">Xem chi tiết</button>
+                                    <button class="btn btn-primary btn-sm">Chỉnh sửa</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -314,6 +381,9 @@
                             <div class="filter-group">
                                 <select id="applicants-job-filter" class="filter-select">
                                     <option value="all">Tất cả tin tuyển dụng</option>
+                                    <option value="frontend">Frontend Developer</option>
+                                    <option value="marketing">Marketing Executive</option>
+                                    <option value="designer">Graphic Designer</option>
                                 </select>
                                 <select id="applicants-status-filter" class="filter-select">
                                     <option value="all">Tất cả trạng thái</option>
@@ -338,7 +408,60 @@
 
                     <div class="applicants-container">
                         <div id="applicants-list" class="applicants-grid">
-                            <!-- Applicants will be loaded here -->
+                            <!-- Sample applicant cards -->
+                            <div class="applicant-card">
+                                <span class="applicant-status status-pending">Mới</span>
+                                <div class="applicant-header">
+                                    <div class="applicant-avatar">N</div>
+                                    <div class="applicant-info">
+                                        <h4>Nguyễn Văn A</h4>
+                                        <p>nguyenvana@email.com</p>
+                                    </div>
+                                </div>
+                                <div class="applicant-job">
+                                    Ứng tuyển: Frontend Developer
+                                </div>
+                                <div class="applicant-actions">
+                                    <button class="btn btn-outline btn-sm">Xem CV</button>
+                                    <button class="btn btn-primary btn-sm">Phỏng vấn</button>
+                                </div>
+                            </div>
+
+                            <div class="applicant-card">
+                                <span class="applicant-status status-reviewed">Đã xem</span>
+                                <div class="applicant-header">
+                                    <div class="applicant-avatar">T</div>
+                                    <div class="applicant-info">
+                                        <h4>Trần Thị B</h4>
+                                        <p>tranthib@email.com</p>
+                                    </div>
+                                </div>
+                                <div class="applicant-job">
+                                    Ứng tuyển: Graphic Designer
+                                </div>
+                                <div class="applicant-actions">
+                                    <button class="btn btn-outline btn-sm">Xem CV</button>
+                                    <button class="btn btn-success btn-sm">Nhận</button>
+                                </div>
+                            </div>
+
+                            <div class="applicant-card">
+                                <span class="applicant-status status-interview">Phỏng vấn</span>
+                                <div class="applicant-header">
+                                    <div class="applicant-avatar">L</div>
+                                    <div class="applicant-info">
+                                        <h4>Lê Văn C</h4>
+                                        <p>levanc@email.com</p>
+                                    </div>
+                                </div>
+                                <div class="applicant-job">
+                                    Ứng tuyển: Marketing Executive
+                                </div>
+                                <div class="applicant-actions">
+                                    <button class="btn btn-outline btn-sm">Xem CV</button>
+                                    <button class="btn btn-success btn-sm">Nhận</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -363,7 +486,23 @@
                     </div>
 
                     <div class="analytics-grid">
-                        <!-- Analytics content will be loaded here -->
+                        <div class="overview-card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-chart-pie"></i> Phân tích ứng viên</h3>
+                            </div>
+                            <div class="card-content">
+                                <p>Biểu đồ thống kê phân tích ứng viên sẽ được hiển thị ở đây.</p>
+                            </div>
+                        </div>
+
+                        <div class="overview-card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-chart-line"></i> Xu hướng tuyển dụng</h3>
+                            </div>
+                            <div class="card-content">
+                                <p>Biểu đồ xu hướng tuyển dụng theo thời gian sẽ được hiển thị ở đây.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -378,7 +517,32 @@
 
                     <div class="profile-container">
                         <div id="profile-content" class="profile-form">
-                            <!-- Profile content will be loaded here -->
+                            <div class="overview-card">
+                                <div class="card-header">
+                                    <h3><i class="fas fa-user"></i> Thông tin cá nhân</h3>
+                                </div>
+                                <div class="card-content">
+                                    <form class="form-container">
+                                        <div class="form-group">
+                                            <label>Họ và tên</label>
+                                            <input type="text" value="Recruiter Name" class="form-control">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Email</label>
+                                            <input type="email" value="recruiter@company.com" class="form-control">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Số điện thoại</label>
+                                            <input type="tel" value="0123456789" class="form-control">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Công ty</label>
+                                            <input type="text" value="Company Name" class="form-control">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Cập nhật thông tin</button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -400,7 +564,7 @@
             </div>
             <div class="modal-body">
                 <form id="job-posting-form" class="job-form">
-                    <!-- Job form content will be inserted here -->
+                    <p>Form đăng tin tuyển dụng sẽ được tải ở đây.</p>
                 </form>
             </div>
         </div>
@@ -420,7 +584,7 @@
             </div>
             <div class="modal-body">
                 <div id="applicant-detail-content">
-                    <!-- Applicant detail content will be inserted here -->
+                    <p>Chi tiết ứng viên sẽ được tải ở đây.</p>
                 </div>
             </div>
         </div>
@@ -436,33 +600,15 @@
 
     <script src="js/common.js"></script>
     <script>
-        // Authentication check - ensure only recruiters can access this page
+        // Dashboard functionality
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Checking authentication for recruiter dashboard...');
+            console.log('Initializing recruiter dashboard...');
             
-            // Check if user is logged in and is a recruiter
-            const user = RecruitmentApp.requireAuth('recruiter');
-            
-            if (!user) {
-                // requireAuth will handle the redirect
-                return;
-            }
-            
-            console.log('Authenticated recruiter:', user);
-            
-            // Update user name in UI
-            const userNameElement = document.getElementById('user-name');
-            if (userNameElement) {
-                userNameElement.textContent = user.full_name;
-            }
-            
-            // Initialize dashboard functionality
+            // Initialize dashboard
             initializeDashboard();
         });
         
         function initializeDashboard() {
-            console.log('Initializing recruiter dashboard...');
-            
             // Tab switching functionality
             const tabButtons = document.querySelectorAll('.tab-btn');
             const tabContents = document.querySelectorAll('.tab-content');
@@ -481,124 +627,69 @@
                 });
             });
             
-            // Initialize quick actions
+            // Quick action buttons
             const quickPostJob = document.getElementById('quick-post-job');
             const detailedPostJob = document.getElementById('detailed-post-job');
             const createJobBtn = document.getElementById('create-job-btn');
             
             if (quickPostJob) {
                 quickPostJob.addEventListener('click', () => {
-                    window.location.href = 'post-job.html?mode=quick';
+                    alert('Chức năng đăng tin nhanh sẽ được phát triển');
                 });
             }
             
             if (detailedPostJob) {
                 detailedPostJob.addEventListener('click', () => {
-                    window.location.href = 'post-job.html';
+                    alert('Chức năng đăng tin chi tiết sẽ được phát triển');
                 });
             }
             
             if (createJobBtn) {
                 createJobBtn.addEventListener('click', () => {
-                    window.location.href = 'post-job.html';
+                    alert('Chức năng tạo tin mới sẽ được phát triển');
                 });
             }
             
-            // Load dashboard data
-            loadDashboardStats();
-            loadRecentApplications();
-            loadHotJobs();
+            // User menu functionality
+            const userMenuBtn = document.getElementById('user-menu-btn');
+            const userDropdown = document.querySelector('.user-dropdown');
+            
+            if (userMenuBtn && userDropdown) {
+                userMenuBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    userDropdown.classList.toggle('show');
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function() {
+                    userDropdown.classList.remove('show');
+                });
+            }
+            
+            // Logout functionality
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function() {
+                    if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+                        // Clear session and redirect
+                        sessionStorage.clear();
+                        localStorage.clear();
+                        window.location.href = 'login.html';
+                    }
+                });
+            }
             
             console.log('Recruiter dashboard initialized successfully');
         }
         
-        async function loadDashboardStats() {
-            try {
-                // Load recruiter-specific jobs data
-                const jobsResponse = await fetch('../api/jobs.php?recruiter_jobs=1');
-                const jobsData = await jobsResponse.json();
-                
-                if (jobsData.success) {
-                    const jobs = jobsData.data || [];
-                    
-                    // Update stats
-                    document.getElementById('total-jobs').textContent = jobs.length;
-                    
-                    // Calculate total views and applicants
-                    let totalViews = 0;
-                    let totalApplicants = 0;
-                    
-                    jobs.forEach(job => {
-                        totalViews += parseInt(job.view_count) || 0;
-                        totalApplicants += parseInt(job.application_count) || 0;
-                    });
-                    
-                    document.getElementById('total-views').textContent = totalViews;
-                    document.getElementById('total-applicants').textContent = totalApplicants;
-                    document.getElementById('jobs-count').textContent = jobs.length;
-                    
-                    // For now, set hired count to 0 (would need separate API endpoint)
-                    document.getElementById('total-hired').textContent = '0';
-                } else {
-                    console.error('Failed to load jobs data:', jobsData.message);
-                }
-            } catch (error) {
-                console.error('Error loading dashboard stats:', error);
-            }
+        // Modal functions (placeholders)
+        function closeJobModal() {
+            document.getElementById('job-posting-modal').style.display = 'none';
         }
         
-        async function loadRecentApplications() {
-            try {
-                // This would need a separate API endpoint for recruiter applications
-                const recentApplicantsContainer = document.getElementById('recent-applicants');
-                recentApplicantsContainer.innerHTML = `
-                    <div class="recent-item">
-                        <div class="item-info">
-                            <p>Chưa có ứng viên mới</p>
-                            <small>Đăng tin tuyển dụng để nhận được ứng viên</small>
-                        </div>
-                    </div>
-                `;
-            } catch (error) {
-                console.error('Error loading recent applications:', error);
-            }
-        }
-        
-        async function loadHotJobs() {
-            try {
-                const hotJobsContainer = document.getElementById('hot-jobs');
-                hotJobsContainer.innerHTML = `
-                    <div class="hot-job-item">
-                        <div class="job-info">
-                            <h4>Chưa có tin tuyển dụng</h4>
-                            <p>Tạo tin tuyển dụng đầu tiên của bạn</p>
-                        </div>
-                        <div class="job-stats">
-                            <span class="views">0 lượt xem</span>
-                        </div>
-                    </div>
-                `;
-            } catch (error) {
-                console.error('Error loading hot jobs:', error);
-            }
-        }
-        
-        // User menu functionality
-        const userMenuBtn = document.getElementById('user-menu-btn');
-        const userDropdown = document.querySelector('.user-dropdown');
-        
-        if (userMenuBtn && userDropdown) {
-            userMenuBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                userDropdown.classList.toggle('show');
-            });
-            
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function() {
-                userDropdown.classList.remove('show');
-            });
+        function closeApplicantModal() {
+            document.getElementById('applicant-detail-modal').style.display = 'none';
         }
     </script>
-    <script src="js/recruiter-dashboard.js"></script>
 </body>
 </html>
