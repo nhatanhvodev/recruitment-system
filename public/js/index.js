@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupSmoothScrolling();
     setupContactForm();
     setupScrollNavigation();
+    setupDashboardRedirect();
 });
 
 // Smooth scroll for navigation links
@@ -35,6 +36,59 @@ function setupSmoothScrolling() {
             }
         });
     });
+}
+
+// Setup dashboard redirect based on user type
+function setupDashboardRedirect() {
+    const dashboardLink = document.getElementById('dashboard-link');
+    
+    if (dashboardLink) {
+        dashboardLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            console.log('Dashboard link clicked');
+            
+            // Get current user directly from localStorage first
+            let user = null;
+            const userData = localStorage.getItem('user');
+            if (userData) {
+                try {
+                    user = JSON.parse(userData);
+                    console.log('User from localStorage:', user);
+                } catch (error) {
+                    console.error('Error parsing user data:', error);
+                }
+            }
+            
+            // Fallback to RecruitmentApp.getCurrentUser()
+            if (!user) {
+                user = RecruitmentApp.getCurrentUser();
+                console.log('User from RecruitmentApp:', user);
+            }
+            
+            if (!user) {
+                console.log('No user found, redirecting to login');
+                RecruitmentApp.showAlert('Bạn cần đăng nhập để truy cập dashboard', 'error');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            console.log('User type:', user.user_type);
+            
+            // Redirect based on user type
+            let redirectUrl = '';
+            if (user.user_type === 'admin') {
+                redirectUrl = 'admin/dashboard.html';
+            } else if (user.user_type === 'recruiter') {
+                redirectUrl = 'recruiter/dashboard.html';
+            } else {
+                redirectUrl = 'candidate/dashboard.html';
+            }
+            
+            console.log('Redirecting to:', redirectUrl);
+            window.location.href = redirectUrl;
+        });
+    }
 }
 
 // Contact form submission

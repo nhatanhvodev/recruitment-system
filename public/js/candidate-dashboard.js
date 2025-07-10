@@ -163,7 +163,7 @@ async function loadCandidateStats() {
     
     try {
         // Get candidate applications
-        const applicationsResult = await RecruitmentApp.apiCall('../api/applications.php?candidate_applications=1');
+        const applicationsResult = await RecruitmentApp.apiCall('../../api/applications.php?candidate_applications=1');
         
         if (applicationsResult.success) {
             const applications = applicationsResult.data;
@@ -227,7 +227,7 @@ async function loadCandidateActivity() {
     const activityList = document.getElementById('recent-activity-list');
     
     try {
-        const result = await RecruitmentApp.apiCall('../api/applications.php?candidate_applications=1&limit=5');
+        const result = await RecruitmentApp.apiCall('../../api/applications.php?candidate_applications=1&limit=5');
         
         if (result.success && result.data.length > 0) {
             const activities = result.data.map(app => {
@@ -287,7 +287,7 @@ async function loadApplicationsData() {
     try {
         applicationsList.innerHTML = '<div class="loading-placeholder"><i class="fas fa-spinner fa-spin"></i><p>Đang tải đơn ứng tuyển...</p></div>';
         
-        const result = await RecruitmentApp.apiCall('../api/applications.php?candidate_applications=1');
+        const result = await RecruitmentApp.apiCall('../../api/applications.php?candidate_applications=1');
         
         if (result.success && result.data.length > 0) {
             renderApplications(result.data);
@@ -431,7 +431,7 @@ async function searchJobs(keyword, location, category) {
         if (location) params.append('location', location);
         if (category) params.append('category', category);
         
-        const result = await RecruitmentApp.apiCall(`../api/jobs.php?${params.toString()}`);
+        const result = await RecruitmentApp.apiCall(`../../api/jobs.php?${params.toString()}`);
         
         if (result.success && result.data.length > 0) {
             const jobsHtml = result.data.map(job => `
@@ -558,7 +558,7 @@ async function updateProfile(e) {
     };
     
     try {
-        const result = await RecruitmentApp.apiCall('../api/users.php', 'PUT', profileData);
+        const result = await RecruitmentApp.apiCall('../../api/users.php', 'PUT', profileData);
         
         if (result.success) {
             RecruitmentApp.showAlert('Cập nhật hồ sơ thành công!', 'success');
@@ -581,7 +581,7 @@ async function withdrawApplication(applicationId) {
     }
     
     try {
-        const result = await RecruitmentApp.apiCall(`../api/applications.php?id=${applicationId}`, 'DELETE');
+        const result = await RecruitmentApp.apiCall(`../../api/applications.php?id=${applicationId}`, 'DELETE');
         
         if (result.success) {
             RecruitmentApp.showAlert('Đã rút đơn ứng tuyển thành công', 'success');
@@ -602,7 +602,7 @@ async function withdrawApplication(applicationId) {
 
 async function quickApply(jobId) {
     try {
-        const result = await RecruitmentApp.apiCall('../api/applications.php', 'POST', {
+        const result = await RecruitmentApp.apiCall('../../api/applications.php', 'POST', {
             job_id: jobId
         });
         

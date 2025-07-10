@@ -134,6 +134,7 @@ async function logout() {
     });
     
     localStorage.removeItem('user');
+    localStorage.removeItem('logged_in');
     updateAuthUI(null);
     showAlert('Đăng xuất thành công', 'success');
     
@@ -190,7 +191,14 @@ function requireAuth(userType = null) {
     
     if (userType && user.user_type !== userType) {
         showAlert('Bạn không có quyền truy cập trang này', 'error');
-        window.location.href = 'index.html';
+        // Redirect to appropriate dashboard instead of index.html
+        if (user.user_type === 'admin') {
+            window.location.href = 'admin/dashboard.html';
+        } else if (user.user_type === 'recruiter') {
+            window.location.href = 'recruiter/dashboard.html';
+        } else {
+            window.location.href = 'candidate/dashboard.html';
+        }
         return false;
     }
     

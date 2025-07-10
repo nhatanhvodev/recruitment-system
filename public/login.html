@@ -79,19 +79,24 @@
                     if (typeof(Storage) !== "undefined") {
                         localStorage.setItem('user', JSON.stringify(result.user));
                         localStorage.setItem('logged_in', 'true');
+                        console.log('Stored user data:', result.user);
                     }
                     
                     showAlert('✅ Đăng nhập thành công! Đang chuyển hướng...', 'success');
                     
                     // Redirect based on user type
                     setTimeout(() => {
+                        console.log('Login redirect - User type:', result.user.user_type);
+                        let redirectUrl = '';
                         if (result.user.user_type === 'admin') {
-                            window.location.href = 'admin/dashboard.html';
+                            redirectUrl = 'admin/dashboard.html';
                         } else if (result.user.user_type === 'recruiter') {
-                            window.location.href = 'recruiter/dashboard.html';
+                            redirectUrl = 'recruiter/dashboard.html';
                         } else {
-                            window.location.href = 'dashboard.html';
+                            redirectUrl = 'candidate/dashboard.html';
                         }
+                        console.log('Login redirect to:', redirectUrl);
+                        window.location.href = redirectUrl;
                     }, 1000);
                 } else {
                     showAlert('❌ ' + (result.message || 'Email hoặc mật khẩu không đúng'), 'error');
@@ -135,13 +140,17 @@
                     console.log('Already logged in user:', user);
                     
                     // Redirect to appropriate dashboard
+                    console.log('Already logged in redirect - User type:', user.user_type);
+                    let redirectUrl = '';
                     if (user.user_type === 'admin') {
-                        window.location.href = 'admin/dashboard.html';
+                        redirectUrl = 'admin/dashboard.html';
                     } else if (user.user_type === 'recruiter') {
-                        window.location.href = 'recruiter-dashboard.html';
+                        redirectUrl = 'recruiter/dashboard.html';
                     } else {
-                        window.location.href = 'dashboard.html';
+                        redirectUrl = 'candidate/dashboard.html';
                     }
+                    console.log('Already logged in redirect to:', redirectUrl);
+                    window.location.href = redirectUrl;
                 }
             }
         });
