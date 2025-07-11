@@ -102,6 +102,33 @@ function initializeDashboard() {
         });
     }
     
+    // Quick post job buttons
+    const quickPostBtn = document.getElementById('quick-post-job');
+    const detailedPostBtn = document.getElementById('detailed-post-job');
+    
+    if (quickPostBtn) {
+        quickPostBtn.addEventListener('click', function() {
+            console.log('Quick post job clicked');
+            window.location.href = '../post-job.html?mode=quick';
+        });
+    }
+    
+    if (detailedPostBtn) {
+        detailedPostBtn.addEventListener('click', function() {
+            console.log('Detailed post job clicked');
+            window.location.href = '../post-job.html?mode=detailed';
+        });
+    }
+    
+    // Create job button in jobs tab
+    const createJobBtn = document.getElementById('create-job-btn');
+    if (createJobBtn) {
+        createJobBtn.addEventListener('click', function() {
+            console.log('Create job clicked');
+            window.location.href = '../post-job.html?mode=detailed';
+        });
+    }
+    
     // Load user data
     try {
         loadUserData();

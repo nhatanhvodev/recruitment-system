@@ -10,6 +10,9 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
+    // Check URL parameters for mode
+    setupPostingMode();
+    
     setupFormValidation();
     setupCharacterCounts();
     setupEditorToolbar();
@@ -34,6 +37,64 @@ function checkRecruiterAuth() {
     }
     
     return true;
+}
+
+function setupPostingMode() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode');
+    
+    const pageHeader = document.querySelector('.page-header h1');
+    const pageDescription = document.querySelector('.page-header p');
+    const formSections = document.querySelectorAll('.form-section');
+    
+    if (mode === 'quick') {
+        // Update page title and description for quick mode
+        if (pageHeader) {
+            pageHeader.innerHTML = '<i class="fas fa-plus-circle"></i> Đăng tin nhanh';
+        }
+        if (pageDescription) {
+            pageDescription.textContent = 'Tạo nhanh thông tin tuyển dụng cơ bản để tìm kiếm ứng viên';
+        }
+        
+        // Hide advanced sections for quick mode
+        formSections.forEach((section, index) => {
+            if (index > 1) { // Keep only first 2 sections (basic info and description)
+                section.style.display = 'none';
+            }
+        });
+        
+        // Update submit button text
+        const submitBtn = document.getElementById('submit-btn');
+        if (submitBtn) {
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Đăng tin nhanh';
+        }
+        
+        console.log('Quick posting mode activated');
+    } else if (mode === 'detailed') {
+        // Update page title for detailed mode (default behavior)
+        if (pageHeader) {
+            pageHeader.innerHTML = '<i class="fas fa-edit"></i> Đăng tin chi tiết';
+        }
+        if (pageDescription) {
+            pageDescription.textContent = 'Tạo thông tin tuyển dụng chi tiết và chuyên nghiệp để thu hút ứng viên chất lượng';
+        }
+        
+        // Show all sections (default behavior)
+        formSections.forEach(section => {
+            section.style.display = 'block';
+        });
+        
+        // Update submit button text
+        const submitBtn = document.getElementById('submit-btn');
+        if (submitBtn) {
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Đăng tin chi tiết';
+        }
+        
+        console.log('Detailed posting mode activated');
+    } else {
+        // Default mode - show all sections
+        console.log('Default posting mode');
+    }
 }
 
 async function loadUserCompanyInfo() {
@@ -266,7 +327,7 @@ async function submitJob(isDraft = false) {
             showSuccessMessage(isDraft ? 'Đã lưu nháp thành công!' : 'Đăng tin tuyển dụng thành công!');
             
             setTimeout(() => {
-                window.location.href = 'dashboard.html';
+                window.location.href = 'recruiter/dashboard.html';
             }, 2000);
         } else {
             RecruitmentApp.showAlert(result.message || 'Có lỗi xảy ra', 'error');
