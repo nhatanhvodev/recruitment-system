@@ -213,26 +213,86 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     
 } elseif($_SERVER['REQUEST_METHOD'] == 'PUT') {
     // Update application status
-    if(!isset($_SESSION['logged_in']) || !in_array($_SESSION['user_type'], ['recruiter', 'admin'])) {
+    if(!isset($_SESSION['logged_in'])) {
         echo json_encode([
             'success' => false,
-            'message' => 'Không có quyền truy cập'
+            'message' => 'Bạn cần đăng nhập'
         ]);
         exit;
     }
-    
+
     $data = json_decode(file_get_contents("php://input"));
-    
+
     if(isset($data->application_id) && isset($data->status)) {
-        if($application->updateStatus($data->application_id, $data->status)) {
-            echo json_encode([
-                'success' => true,
-                'message' => 'Cập nhật trạng thái thành công'
-            ]);
+        // Nếu là ứng viên thì chỉ cho phép rút đơn của chính mình
+        if($_SESSION['user_type'] == 'candidate' && $data->status == 'withdrawn') {
+            $user_id = $_SESSION['user_id'];
+            // Lấy candidate_id từ user_id
+            $query = "SELECT candidate_id FROM candidates WHERE user_id = :user_id";
+            $stmt = $db->prepare($query);
+            $stmt->bindParam(':user_id', $user_id);
+            $stmt->execute();
+            if($stmt->rowCount() > 0) {
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                $candidate_id = $row['candidate_id'];
+                // Kiểm tra đơn này có phải của ứng viên không
+                $query = "SELECT * FROM applications WHERE application_id = :application_id AND candidate_id = :candidate_id";
+                $stmt = $db->prepare($query);
+                $stmt->bindParam(':application_id', $data->application_id);
+                $stmt->bindParam(':candidate_id', $candidate_id);
+                $stmt->execute();
+                if($stmt->rowCount() > 0) {
+                    if($application->updateStatus($data->application_id, 'withdrawn')) {
+                        // Lấy job_id của đơn ứng tuyển này
+                        $query = "SELECT job_id FROM applications WHERE application_id = :application_id";
+                        $stmt = $db->prepare($query);
+                        $stmt->bindParam(':application_id', $data->application_id);
+                        $stmt->execute();
+                        if($stmt->rowCount() > 0) {
+                            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                            $job->job_id = $row['job_id'];
+                            $job->decrementApplicationCount();
+                        }
+                        echo json_encode([
+                            'success' => true,
+                            'message' => 'Đã rút đơn thành công'
+                        ]);
+                    } else {
+                        echo json_encode([
+                            'success' => false,
+                            'message' => 'Có lỗi xảy ra khi rút đơn'
+                        ]);
+                    }
+                } else {
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Bạn không có quyền rút đơn này'
+                    ]);
+                }
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Không tìm thấy thông tin ứng viên'
+                ]);
+            }
+        }
+        // Nếu là recruiter hoặc admin thì giữ nguyên logic cũ
+        else if(in_array($_SESSION['user_type'], ['recruiter', 'admin'])) {
+            if($application->updateStatus($data->application_id, $data->status)) {
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Cập nhật trạng thái thành công'
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Có lỗi xảy ra khi cập nhật'
+                ]);
+            }
         } else {
             echo json_encode([
                 'success' => false,
-                'message' => 'Có lỗi xảy ra khi cập nhật'
+                'message' => 'Không có quyền thực hiện thao tác này'
             ]);
         }
     } else {
@@ -241,11 +301,5 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             'message' => 'Thiếu thông tin'
         ]);
     }
-    
-} else {
-    echo json_encode([
-        'success' => false,
-        'message' => 'Phương thức không được hỗ trợ'
-    ]);
 }
 ?>

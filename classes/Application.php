@@ -86,14 +86,10 @@ class Application {
     }
 
     public function updateStatus($application_id, $status) {
-        $query = "UPDATE " . $this->table_name . " 
-                  SET status = :status, reviewed_at = NOW() 
-                  WHERE application_id = :application_id";
-
+        $query = "UPDATE " . $this->table_name . " SET status = :status WHERE application_id = :application_id";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":status", $status);
-        $stmt->bindParam(":application_id", $application_id);
-
+        $stmt->bindParam(':status', $status);
+        $stmt->bindParam(':application_id', $application_id);
         return $stmt->execute();
     }
 

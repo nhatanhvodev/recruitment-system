@@ -375,7 +375,7 @@ async function loadApplicationsData() {
 
 function renderApplications(applications) {
     const applicationsList = document.getElementById('applications-list');
-    
+    applications = applications.filter(app => app.status !== 'withdrawn');
     if (applications.length === 0) {
         applicationsList.innerHTML = `
             <div class="empty-state">
@@ -647,8 +647,8 @@ async function withdrawApplication(applicationId) {
     
     try {
         const result = await RecruitmentApp.apiCall('../../api/applications.php', {
-            method: 'DELETE',
-            body: JSON.stringify({ application_id: applicationId }),
+            method: 'PUT', // Đổi từ DELETE sang PUT
+            body: JSON.stringify({ application_id: applicationId, status: 'withdrawn' }),
             headers: {
                 'Content-Type': 'application/json'
             }

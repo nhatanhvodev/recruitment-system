@@ -141,6 +141,14 @@ class Job {
         return $stmt->execute();
     }
 
+    // Thêm hàm giảm số lượng đơn ứng tuyển
+    public function decrementApplicationCount() {
+        $query = "UPDATE " . $this->table_name . " SET application_count = application_count - 1 WHERE job_id = :job_id AND application_count > 0";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":job_id", $this->job_id);
+        return $stmt->execute();
+    }
+
     public function update() {
         $query = "UPDATE " . $this->table_name . " 
                   SET title = :title, description = :description, requirements = :requirements,
