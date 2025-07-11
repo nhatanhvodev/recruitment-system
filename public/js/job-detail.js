@@ -272,6 +272,9 @@ function showApplicationModal(jobId) {
             // Update application count
             const appCount = document.getElementById('job-applications');
             appCount.textContent = parseInt(appCount.textContent) + 1;
+            if (window.updateApplicationBadge && typeof window.updateApplicationBadge === 'function') {
+                window.updateApplicationBadge();
+            }
         } else {
             RecruitmentApp.showAlert(result.message, 'error');
         }

@@ -14,6 +14,32 @@ document.addEventListener('DOMContentLoaded', function() {
     loadDashboardData();
 });
 
+// Function to update application count badge
+async function updateApplicationBadge() {
+    const applicationsBadge = document.getElementById('applications-badge');
+    
+    if (!applicationsBadge) return;
+    
+    try {
+        const applicationsResult = await RecruitmentApp.apiCall('../../api/applications.php?candidate_applications=1');
+        
+        if (applicationsResult.success) {
+            const allApplications = applicationsResult.data;
+            // Filter out withdrawn applications for display consistency
+            const activeApplications = allApplications.filter(app => app.status !== 'withdrawn');
+            applicationsBadge.textContent = activeApplications.length;
+            
+            // Add visual feedback for count change
+            applicationsBadge.classList.add('updated');
+            setTimeout(() => {
+                applicationsBadge.classList.remove('updated');
+            }, 1000);
+        }
+    } catch (error) {
+        console.error('Error updating application badge:', error);
+    }
+}
+
 function checkAuthentication() {
     currentUser = RecruitmentApp.getCurrentUser();
     
@@ -211,22 +237,24 @@ async function loadCandidateStats() {
         const applicationsResult = await RecruitmentApp.apiCall('../../api/applications.php?candidate_applications=1');
         
         if (applicationsResult.success) {
-            const applications = applicationsResult.data;
-            const pendingCount = applications.filter(app => app.status === 'pending').length;
-            const interviewCount = applications.filter(app => app.status === 'interview').length;
-            const acceptedCount = applications.filter(app => app.status === 'accepted').length;
+            const allApplications = applicationsResult.data;
+            // Filter out withdrawn applications for display consistency
+            const activeApplications = allApplications.filter(app => app.status !== 'withdrawn');
+            const pendingCount = activeApplications.filter(app => app.status === 'pending').length;
+            const interviewCount = activeApplications.filter(app => app.status === 'interview').length;
+            const acceptedCount = activeApplications.filter(app => app.status === 'accepted').length;
             
             // Update profile header stats
-            if (totalApplicationsEl) totalApplicationsEl.textContent = applications.length;
+            if (totalApplicationsEl) totalApplicationsEl.textContent = activeApplications.length;
             if (pendingApplicationsEl) pendingApplicationsEl.textContent = pendingCount;
             if (savedJobsEl) savedJobsEl.textContent = '0'; // This would be from saved jobs API
-            if (applicationsBadge) applicationsBadge.textContent = applications.length;
+            if (applicationsBadge) applicationsBadge.textContent = activeApplications.length;
             
             // Update stats grid in overview
             statsGrid.innerHTML = `
                 <div class="stat-card">
                     <i class="fas fa-file-text"></i>
-                    <h3>${applications.length}</h3>
+                    <h3>${activeApplications.length}</h3>
                     <p>Tổng đơn ứng tuyển</p>
                 </div>
                 <div class="stat-card orange">
@@ -494,24 +522,24 @@ async function searchJobs(keyword, location, category) {
         
         if (result.success && result.data.length > 0) {
             const jobsHtml = result.data.map(job => `
-                <div class="job-search-item" data-job-id="${job.id}">
+                <div class="job-search-item" data-job-id="${job.job_id}">
                     <div class="job-header">
-                        <h3><a href="../job-detail.html?id=${job.id}" class="job-title-link" data-job-id="${job.id}">${job.title}</a></h3>
+                        <h3><a href="../job-detail.html?id=${job.job_id}" class="job-title-link" data-job-id="${job.job_id}">${job.title}</a></h3>
                         <p class="company">${job.company_name}</p>
                     </div>
                     <div class="job-meta">
                         <span><i class="fas fa-map-marker-alt"></i> ${job.location}</span>
                         ${job.salary ? `<span><i class="fas fa-money-bill"></i> ${RecruitmentApp.formatCurrency(job.salary)}</span>` : ''}
-                        <span><i class="fas fa-clock"></i> ${RecruitmentApp.formatDate(job.created_at)}</span>
+                        <span><i class="fas fa-clock"></i> ${RecruitmentApp.formatDate(job.posted_at)}</span>
                     </div>
                     <div class="job-description">
                         <p>${job.description.substring(0, 150)}...</p>
                     </div>
                     <div class="job-actions">
-                        <a href="../job-detail.html?id=${job.id}" class="btn btn-outline btn-sm view-detail-btn" data-job-id="${job.id}">
+                        <a href="../job-detail.html?id=${job.job_id}" class="btn btn-outline btn-sm view-detail-btn" data-job-id="${job.job_id}">
                             <i class="fas fa-eye"></i> Xem chi tiết
                         </a>
-                        <button class="btn btn-primary btn-sm apply-btn" data-job-id="${job.id}">
+                        <button class="btn btn-primary btn-sm apply-btn" data-job-id="${job.job_id}">
                             <i class="fas fa-paper-plane"></i> Ứng tuyển ngay
                         </button>
                     </div>
@@ -657,7 +685,10 @@ async function withdrawApplication(applicationId) {
         if (result.success) {
             RecruitmentApp.showAlert('Đã rút đơn ứng tuyển', 'success');
             loadApplicationsData(); // Reload applications
-            loadCandidateStats(); // Update stats
+            updateApplicationBadge(); // Update badge count
+            if (currentSection === 'overview') {
+                loadCandidateStats(); // Update overview stats if currently viewing overview
+            }
         } else {
             RecruitmentApp.showAlert(result.message || 'Có lỗi xảy ra', 'error');
         }
@@ -737,8 +768,11 @@ async function quickApply(jobId, buttonElement = null) {
                 }
                 
                 RecruitmentApp.showAlert('Ứng tuyển thành công! 🎉', 'success');
-                loadCandidateStats(); // Update stats
-                loadCandidateActivity(); // Refresh activity
+                updateApplicationBadge(); // Update badge count
+                if (currentSection === 'overview') {
+                    loadCandidateStats(); // Update overview stats if currently viewing overview
+                    loadCandidateActivity(); // Refresh activity
+                }
                 
                 // Show success modal with next steps
                 showApplicationSuccessModal(result.application_id);
@@ -905,16 +939,21 @@ function closeSuccessModal() {
 function setupJobSearchEventListeners() {
     console.log('Setting up job search event listeners...');
     
-    // View detail buttons
+    // View detail buttons - let href handle navigation naturally
     const viewDetailButtons = document.querySelectorAll('.view-detail-btn, .job-title-link');
     console.log(`Found ${viewDetailButtons.length} view detail buttons`);
     
     viewDetailButtons.forEach(link => {
         link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const jobId = this.dataset.jobId;
-            console.log('View detail clicked for job:', jobId);
-            viewJobDetail(jobId, e);
+            // Store current search context for back navigation
+            sessionStorage.setItem('returnToSearch', JSON.stringify({
+                section: currentSection,
+                timestamp: Date.now()
+            }));
+            
+            // Let the href handle navigation naturally
+            // No preventDefault() to allow normal link behavior
+            console.log('View detail clicked for job:', this.dataset.jobId);
         });
     });
     
@@ -934,12 +973,17 @@ function setupJobSearchEventListeners() {
 
 // Setup event listeners for applications section
 function setupApplicationsEventListeners() {
-    // View detail buttons
+    // View detail buttons - let href handle navigation naturally
     document.querySelectorAll('.applications-list .view-detail-btn').forEach(link => {
         link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const jobId = this.dataset.jobId;
-            viewJobDetail(jobId, e);
+            // Store current search context for back navigation
+            sessionStorage.setItem('returnToSearch', JSON.stringify({
+                section: currentSection,
+                timestamp: Date.now()
+            }));
+            
+            // Let the href handle navigation naturally
+            // No preventDefault() to allow normal link behavior
         });
     });
     
@@ -953,50 +997,21 @@ function setupApplicationsEventListeners() {
     });
 }
 
-// Enhanced view details function
-function viewJobDetail(jobId, event = null) {
-    console.log('viewJobDetail called with jobId:', jobId);
-    
-    try {
-        if (event) {
-            event.preventDefault();
-        }
-        
-        // Validate jobId
-        if (!jobId) {
-            console.error('Job ID is missing');
-            RecruitmentApp.showAlert('Không tìm thấy thông tin công việc', 'error');
-            return;
-        }
-        
-        // Add loading state to the clicked button
-        const button = event ? event.currentTarget : null;
-        if (button) {
-            const originalText = button.innerHTML;
-            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tải...';
-            button.disabled = true;
-            
-            // Restore button after navigation
-            setTimeout(() => {
-                button.innerHTML = originalText;
-                button.disabled = false;
-            }, 500);
-        }
-        
-        // Store current search context for back navigation
-        sessionStorage.setItem('returnToSearch', JSON.stringify({
-            section: currentSection,
-            timestamp: Date.now()
-        }));
-        
-        // Navigate to job detail with smooth transition
-        console.log('Navigating to job detail page...');
-        window.location.href = `../job-detail.html?id=${jobId}`;
-        
-    } catch (error) {
-        console.error('Error in viewJobDetail:', error);
-        RecruitmentApp.showAlert('Có lỗi xảy ra khi mở chi tiết công việc', 'error');
+// Simple view details function for compatibility
+function viewJobDetail(jobId) {
+    if (!jobId) {
+        RecruitmentApp.showAlert('Không tìm thấy thông tin công việc', 'error');
+        return;
     }
+    
+    // Store current search context for back navigation
+    sessionStorage.setItem('returnToSearch', JSON.stringify({
+        section: currentSection,
+        timestamp: Date.now()
+    }));
+    
+    // Direct navigation
+    window.location.href = `../job-detail.html?id=${jobId}`;
 }
 
 function cancelEdit() {
@@ -1012,3 +1027,4 @@ window.closeQuickApplyModal = closeQuickApplyModal;
 window.closeSuccessModal = closeSuccessModal;
 window.setupJobSearchEventListeners = setupJobSearchEventListeners;
 window.setupApplicationsEventListeners = setupApplicationsEventListeners;
+window.updateApplicationBadge = updateApplicationBadge;
