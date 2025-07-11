@@ -188,7 +188,7 @@ function displayRelatedJobs(jobs) {
 }
 
 async function handleJobApply() {
-    const user = RecruitmentApp.getCurrentUser();
+    let user = RecruitmentApp.getCurrentUser();
     
     if (!user) {
         RecruitmentApp.showAlert('Bạn cần đăng nhập để ứng tuyển', 'error');
@@ -196,9 +196,44 @@ async function handleJobApply() {
         return;
     }
     
+    // Try to refresh session if user type is not candidate
     if (user.user_type !== 'candidate') {
-        RecruitmentApp.showAlert('Chỉ ứng viên mới có thể ứng tuyển', 'error');
-        return;
+        RecruitmentApp.showAlert('Đang kiểm tra tài khoản...', 'info');
+        user = await RecruitmentApp.refreshUserSession();
+        
+        if (user && user.user_type === 'candidate') {
+            RecruitmentApp.showAlert('Đã cập nhật thông tin tài khoản', 'success');
+        } else {
+            const alertMessage = `Chỉ ứng viên mới có thể ứng tuyển. Tài khoản hiện tại: ${user ? user.user_type : 'không xác định'}. ` +
+                                `Vui lòng đăng xuất và đăng nhập lại, hoặc liên hệ admin để chuyển đổi tài khoản.`;
+            RecruitmentApp.showAlert(alertMessage, 'error');
+            return;
+        }
+    }
+    
+    // Check application status before showing modal
+    try {
+        const checkResult = await RecruitmentApp.apiCall(`../api/applications.php?check_application=1&job_id=${currentJobId}`);
+        console.log('Application check result:', checkResult);
+        
+        if (checkResult.success && checkResult.data) {
+            const { applications, can_apply } = checkResult.data;
+            
+            if (!can_apply && applications.length > 0) {
+                const activeApp = applications.find(app => app.status !== 'withdrawn');
+                if (activeApp) {
+                    RecruitmentApp.showAlert(
+                        `Bạn đã ứng tuyển vào vị trí này rồi (Trạng thái: ${activeApp.status}, Ngày: ${RecruitmentApp.formatDate(activeApp.applied_at)}). ` +
+                        `Bạn có thể xem chi tiết trong dashboard.`, 
+                        'warning'
+                    );
+                    return;
+                }
+            }
+        }
+    } catch (error) {
+        console.log('Could not check application status:', error);
+        // Continue with application anyway
     }
     
     // Show application modal
@@ -391,7 +426,62 @@ function hideLoading() {
     document.getElementById('loading-state').style.display = 'none';
 }
 
+// Debug function for application status
+async function debugApplicationStatus() {
+    const user = RecruitmentApp.getCurrentUser();
+    
+    if (!user) {
+        alert('Vui lòng đăng nhập trước');
+        return;
+    }
+    
+    if (!currentJobId) {
+        alert('Không tìm thấy ID công việc');
+        return;
+    }
+    
+    try {
+        // Check application status
+        const checkResult = await RecruitmentApp.apiCall(`../api/applications.php?check_application=1&job_id=${currentJobId}`);
+        
+        let debugInfo = `=== DEBUG THÔNG TIN ỨNG TUYỂN ===\n\n`;
+        debugInfo += `User ID: ${user.user_id}\n`;
+        debugInfo += `User Type: ${user.user_type}\n`;
+        debugInfo += `Email: ${user.email}\n`;
+        debugInfo += `Job ID: ${currentJobId}\n\n`;
+        
+        if (checkResult.success) {
+            const data = checkResult.data;
+            debugInfo += `Candidate ID: ${data.candidate_id}\n`;
+            debugInfo += `Có thể ứng tuyển: ${data.can_apply ? 'CÓ' : 'KHÔNG'}\n`;
+            debugInfo += `Số đơn ứng tuyển hiện tại: ${data.applications.length}\n\n`;
+            
+            if (data.applications.length > 0) {
+                debugInfo += `Chi tiết các đơn ứng tuyển:\n`;
+                data.applications.forEach((app, index) => {
+                    debugInfo += `${index + 1}. ID: ${app.application_id}, Trạng thái: ${app.status}, Ngày: ${app.applied_at}\n`;
+                });
+            } else {
+                debugInfo += `Không có đơn ứng tuyển nào.\n`;
+            }
+        } else {
+            debugInfo += `LỖI: ${checkResult.message}\n`;
+        }
+        
+        // Copy to clipboard and show
+        navigator.clipboard.writeText(debugInfo).then(() => {
+            alert('Thông tin debug đã được copy vào clipboard!\n\n' + debugInfo);
+        }).catch(() => {
+            alert(debugInfo);
+        });
+        
+    } catch (error) {
+        alert('Lỗi khi debug: ' + error.message);
+    }
+}
+
 // Global function access
 window.closeApplicationModal = closeApplicationModal;
 window.closeShareModal = closeShareModal;
 window.copyToClipboard = copyToClipboard;
+window.debugApplicationStatus = debugApplicationStatus;

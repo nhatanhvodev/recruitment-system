@@ -187,6 +187,41 @@ function loadDashboardData() {
     }
 }
 
+async function checkAccountStatus(helpNotice) {
+    try {
+        // Try to refresh user session to check for sync issues
+        const refreshedUser = await RecruitmentApp.refreshUserSession();
+        
+        // Check if session was out of sync
+        if (refreshedUser && refreshedUser.user_type !== currentUser.user_type) {
+            // Session was out of sync but now fixed
+            currentUser = refreshedUser;
+            setupUserInterface(); // Update UI with correct info
+            
+            // Show help notice for a moment
+            if (helpNotice) {
+                helpNotice.style.display = 'flex';
+                setTimeout(() => {
+                    helpNotice.style.display = 'none';
+                }, 5000);
+            }
+        }
+        
+        // Try a small test API call to check if everything is working
+        const testResult = await RecruitmentApp.apiCall('../../api/applications.php?candidate_applications=1&limit=1');
+        
+        if (!testResult.success && testResult.message && testResult.message.includes('user_type')) {
+            // User might have application issues, show help notice
+            if (helpNotice) {
+                helpNotice.style.display = 'flex';
+            }
+        }
+    } catch (error) {
+        console.log('Account status check failed:', error);
+        // Don't show notice for network errors
+    }
+}
+
 async function loadSectionData(section) {
     switch (section) {
         case 'overview':
@@ -210,11 +245,15 @@ async function loadSectionData(section) {
 async function loadOverviewData() {
     const statsGrid = document.getElementById('stats-grid');
     const activityList = document.getElementById('recent-activity-list');
+    const helpNotice = document.getElementById('help-notice');
     
     try {
         // Show loading
         statsGrid.innerHTML = '<div class="loading-placeholder"><i class="fas fa-spinner fa-spin"></i><p>Đang tải thống kê...</p></div>';
         activityList.innerHTML = '<div class="loading-placeholder"><i class="fas fa-spinner fa-spin"></i><p>Đang tải hoạt động...</p></div>';
+        
+        // Check if user might have account issues and show help notice
+        await checkAccountStatus(helpNotice);
         
         await loadCandidateStats();
         await loadCandidateActivity();

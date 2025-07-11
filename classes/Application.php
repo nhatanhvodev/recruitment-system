@@ -43,7 +43,7 @@ class Application {
 
     public function applicationExists() {
         $query = "SELECT application_id FROM " . $this->table_name . " 
-                  WHERE job_id = :job_id AND candidate_id = :candidate_id";
+                  WHERE job_id = :job_id AND candidate_id = :candidate_id AND status != 'withdrawn'";
         
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":job_id", $this->job_id);

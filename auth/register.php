@@ -130,12 +130,21 @@ try {
         // Create specific user type record
         switch ($data->user_type) {
             case 'candidate':
+                // Ensure candidate record is created with proper error handling
                 $query = "INSERT INTO candidates (user_id) VALUES (:user_id)";
                 $stmt = $db->prepare($query);
                 $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
                 
                 if (!$stmt->execute()) {
-                    throw new Exception('Không thể tạo hồ sơ ứng viên');
+                    // If insert fails, try to check if record already exists
+                    $check_query = "SELECT candidate_id FROM candidates WHERE user_id = :user_id";
+                    $check_stmt = $db->prepare($check_query);
+                    $check_stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+                    $check_stmt->execute();
+                    
+                    if ($check_stmt->rowCount() === 0) {
+                        throw new Exception('Không thể tạo hồ sơ ứng viên');
+                    }
                 }
                 break;
                 

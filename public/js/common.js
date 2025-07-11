@@ -235,6 +235,29 @@ async function getCandidateApplications() {
     return await apiCall(API_BASE + 'applications.php?candidate_applications=1');
 }
 
+// Helper function to check and refresh user session
+async function refreshUserSession() {
+    try {
+        // Try to get user info from server to sync session
+        const response = await fetch(AUTH_BASE + 'login.php', {
+            method: 'GET',
+            credentials: 'include'
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            if (result.success && result.user) {
+                localStorage.setItem('user', JSON.stringify(result.user));
+                updateAuthUI(result.user);
+                return result.user;
+            }
+        }
+    } catch (error) {
+        console.log('Could not refresh session:', error);
+    }
+    return getCurrentUser();
+}
+
 // Initialize common functionality
 document.addEventListener('DOMContentLoaded', function() {
     // Check authentication status
@@ -278,5 +301,6 @@ window.RecruitmentApp = {
     getJobs,
     getJob,
     applyForJob,
-    getCandidateApplications
+    getCandidateApplications,
+    refreshUserSession
 };

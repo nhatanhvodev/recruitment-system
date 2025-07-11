@@ -13,10 +13,61 @@ $job = new Job($db);
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Submit application
-    if(!isset($_SESSION['logged_in']) || $_SESSION['user_type'] != 'candidate') {
+    if(!isset($_SESSION['logged_in'])) {
         echo json_encode([
             'success' => false,
-            'message' => 'Bạn cần đăng nhập với tài khoản ứng viên'
+            'message' => 'Bạn cần đăng nhập để ứng tuyển'
+        ]);
+        exit;
+    }
+    
+    // Auto-fix candidate account issues
+    $user_id = $_SESSION['user_id'];
+    
+    // Check and sync user_type from database
+    $query = "SELECT user_type, is_active FROM users WHERE user_id = :user_id";
+    $stmt = $db->prepare($query);
+    $stmt->bindParam(':user_id', $user_id);
+    $stmt->execute();
+    
+    if($stmt->rowCount() > 0) {
+        $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        // Auto-activate account if inactive
+        if (!$user_data['is_active']) {
+            $query = "UPDATE users SET is_active = 1 WHERE user_id = :user_id";
+            $stmt = $db->prepare($query);
+            $stmt->bindParam(':user_id', $user_id);
+            $stmt->execute();
+        }
+        
+        // Sync session user_type with database
+        if ($_SESSION['user_type'] !== $user_data['user_type']) {
+            $_SESSION['user_type'] = $user_data['user_type'];
+        }
+        
+        // If user is candidate but no candidate record exists, create it
+        if ($user_data['user_type'] === 'candidate') {
+            $query = "SELECT candidate_id FROM candidates WHERE user_id = :user_id";
+            $stmt = $db->prepare($query);
+            $stmt->bindParam(':user_id', $user_id);
+            $stmt->execute();
+            
+            if ($stmt->rowCount() === 0) {
+                $query = "INSERT INTO candidates (user_id) VALUES (:user_id)";
+                $stmt = $db->prepare($query);
+                $stmt->bindParam(':user_id', $user_id);
+                $stmt->execute();
+            }
+        }
+    }
+    
+    // Final check after auto-fix
+    if($_SESSION['user_type'] != 'candidate') {
+        $current_type = $_SESSION['user_type'];
+        echo json_encode([
+            'success' => false,
+            'message' => 'Tài khoản của bạn không phải là tài khoản ứng viên. Loại tài khoản hiện tại: ' . $current_type . '. Vui lòng liên hệ admin để chuyển đổi tài khoản.'
         ]);
         exit;
     }
@@ -39,6 +90,14 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             $application->candidate_id = $candidate_id;
             $application->cover_letter = $data->cover_letter ?? '';
             
+            // Debug: Check existing applications for this candidate and job
+            $check_query = "SELECT application_id, status, applied_at FROM applications 
+                           WHERE job_id = :job_id AND candidate_id = :candidate_id";
+            $check_stmt = $db->prepare($check_query);
+            $check_stmt->bindParam(':job_id', $data->job_id);
+            $check_stmt->bindParam(':candidate_id', $candidate_id);
+            $check_stmt->execute();
+            
             if($application->create()) {
                 // Increment job application count
                 $job->job_id = $data->job_id;
@@ -57,10 +116,24 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                     'message' => 'Nộp đơn thành công'
                 ]);
             } else {
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Bạn đã nộp đơn cho công việc này rồi'
-                ]);
+                // Enhanced error message with debug info
+                $existing_apps = [];
+                while($row = $check_stmt->fetch(PDO::FETCH_ASSOC)) {
+                    $existing_apps[] = $row;
+                }
+                
+                if(count($existing_apps) > 0) {
+                    $app_info = $existing_apps[0];
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Bạn đã nộp đơn cho công việc này rồi (Trạng thái: ' . $app_info['status'] . ', Ngày nộp: ' . $app_info['applied_at'] . '). Nếu bạn đã rút đơn trước đó, vui lòng thử lại.'
+                    ]);
+                } else {
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Không thể nộp đơn ứng tuyển. Vui lòng thử lại sau.'
+                    ]);
+                }
             }
         } else {
             echo json_encode([
@@ -185,6 +258,60 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             echo json_encode([
                 'success' => false,
                 'message' => 'Không tìm thấy thông tin recruiter'
+            ]);
+        }
+        
+    } elseif(isset($_GET['check_application']) && isset($_GET['job_id'])) {
+        // Check if candidate has already applied for a specific job
+        if($_SESSION['user_type'] != 'candidate') {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Không có quyền truy cập'
+            ]);
+            exit;
+        }
+        
+        $user_id = $_SESSION['user_id'];
+        $job_id = $_GET['job_id'];
+        
+        // Get candidate_id
+        $query = "SELECT candidate_id FROM candidates WHERE user_id = :user_id";
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(':user_id', $user_id);
+        $stmt->execute();
+        
+        if($stmt->rowCount() > 0) {
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $candidate_id = $row['candidate_id'];
+            
+            // Check applications for this job
+            $query = "SELECT application_id, status, applied_at FROM applications 
+                     WHERE job_id = :job_id AND candidate_id = :candidate_id";
+            $stmt = $db->prepare($query);
+            $stmt->bindParam(':job_id', $job_id);
+            $stmt->bindParam(':candidate_id', $candidate_id);
+            $stmt->execute();
+            
+            $applications = [];
+            while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $applications[] = $row;
+            }
+            
+            echo json_encode([
+                'success' => true,
+                'data' => [
+                    'candidate_id' => $candidate_id,
+                    'job_id' => $job_id,
+                    'applications' => $applications,
+                    'can_apply' => count(array_filter($applications, function($app) {
+                        return $app['status'] !== 'withdrawn';
+                    })) === 0
+                ]
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Không tìm thấy thông tin ứng viên'
             ]);
         }
         
