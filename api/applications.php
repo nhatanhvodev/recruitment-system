@@ -1,4 +1,8 @@
 <?php
+// Suppress PHP errors that might break JSON response
+error_reporting(E_ERROR | E_PARSE);
+ini_set('display_errors', 0);
+
 session_start();
 header('Content-Type: application/json');
 
@@ -261,7 +265,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             ]);
         }
         
-    } elseif(isset($_GET['check_application']) && isset($_GET['job_id'])) {
+    } elseif((isset($_GET['check_application']) || isset($_GET['check_applied'])) && isset($_GET['job_id'])) {
         // Check if candidate has already applied for a specific job
         if($_SESSION['user_type'] != 'candidate') {
             echo json_encode([
@@ -284,28 +288,29 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             $candidate_id = $row['candidate_id'];
             
-            // Check applications for this job
+            // Check applications for this job - only non-withdrawn
             $query = "SELECT application_id, status, applied_at FROM applications 
-                     WHERE job_id = :job_id AND candidate_id = :candidate_id";
+                     WHERE job_id = :job_id AND candidate_id = :candidate_id AND status != 'withdrawn'";
             $stmt = $db->prepare($query);
             $stmt->bindParam(':job_id', $job_id);
             $stmt->bindParam(':candidate_id', $candidate_id);
             $stmt->execute();
             
-            $applications = [];
+            $activeApplications = [];
             while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $applications[] = $row;
+                $activeApplications[] = $row;
             }
+            
+            $alreadyApplied = count($activeApplications) > 0;
             
             echo json_encode([
                 'success' => true,
+                'already_applied' => $alreadyApplied,
                 'data' => [
                     'candidate_id' => $candidate_id,
                     'job_id' => $job_id,
-                    'applications' => $applications,
-                    'can_apply' => count(array_filter($applications, function($app) {
-                        return $app['status'] !== 'withdrawn';
-                    })) === 0
+                    'active_applications' => $activeApplications,
+                    'can_apply' => !$alreadyApplied
                 ]
             ]);
         } else {

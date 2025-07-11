@@ -86,10 +86,37 @@ async function apiCall(endpoint, options = {}) {
             ...options
         });
         
+        // Check if response is ok
+        if (!response.ok) {
+            console.error(`HTTP error! status: ${response.status}`);
+            return { success: false, message: `HTTP error: ${response.status}` };
+        }
+        
+        // Check content type
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const text = await response.text();
+            console.error('Non-JSON response received:', text);
+            console.error('Content-Type:', contentType);
+            
+            // Try to extract PHP error message if present
+            if (text.includes('<br') || text.includes('Fatal error') || text.includes('Warning:')) {
+                const cleanError = text.replace(/<[^>]*>/g, '').trim();
+                const firstLine = cleanError.split('\n')[0];
+                return { success: false, message: `Server error: ${firstLine}` };
+            }
+            
+            return { success: false, message: 'Server returned invalid response format' };
+        }
+        
         const data = await response.json();
         return data;
     } catch (error) {
         console.error('API call failed:', error);
+        if (error.name === 'SyntaxError' && error.message.includes('JSON')) {
+            showAlert('Server trả về dữ liệu không hợp lệ', 'error');
+            return { success: false, message: 'Invalid JSON response from server' };
+        }
         showAlert('Có lỗi xảy ra khi kết nối với server', 'error');
         return { success: false, message: 'Network error' };
     }

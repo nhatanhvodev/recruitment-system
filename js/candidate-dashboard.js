@@ -25,7 +25,7 @@ async function updateApplicationBadge() {
         
         if (applicationsResult.success) {
             const allApplications = applicationsResult.data;
-            // Filter out withdrawn applications for display consistency
+            // Count active applications for badge (excluding withdrawn)
             const activeApplications = allApplications.filter(app => app.status !== 'withdrawn');
             applicationsBadge.textContent = activeApplications.length;
             
@@ -277,11 +277,11 @@ async function loadCandidateStats() {
         
         if (applicationsResult.success) {
             const allApplications = applicationsResult.data;
-            // Filter out withdrawn applications for display consistency
+            // Count active applications for stats (excluding withdrawn)
             const activeApplications = allApplications.filter(app => app.status !== 'withdrawn');
-            const pendingCount = activeApplications.filter(app => app.status === 'pending').length;
-            const interviewCount = activeApplications.filter(app => app.status === 'interview').length;
-            const acceptedCount = activeApplications.filter(app => app.status === 'accepted').length;
+            const pendingCount = allApplications.filter(app => app.status === 'pending').length;
+            const interviewCount = allApplications.filter(app => app.status === 'interview').length;
+            const acceptedCount = allApplications.filter(app => app.status === 'accepted').length;
             
             // Update profile header stats
             if (totalApplicationsEl) totalApplicationsEl.textContent = activeApplications.length;
@@ -442,7 +442,8 @@ async function loadApplicationsData() {
 
 function renderApplications(applications) {
     const applicationsList = document.getElementById('applications-list');
-    applications = applications.filter(app => app.status !== 'withdrawn');
+    
+    // Don't filter out withdrawn applications - show them with clear status
     if (applications.length === 0) {
         applicationsList.innerHTML = `
             <div class="empty-state">
@@ -461,7 +462,8 @@ function renderApplications(applications) {
             'reviewed': 'Đã xem',
             'interview': 'Phỏng vấn',
             'accepted': 'Được nhận',
-            'rejected': 'Bị từ chối'
+            'rejected': 'Bị từ chối',
+            'withdrawn': 'Đã rút đơn'
         }[app.status] || app.status;
         
         return `
@@ -483,6 +485,11 @@ function renderApplications(applications) {
                         ${app.status === 'pending' ? `
                             <button class="btn btn-danger btn-sm withdraw-btn" data-application-id="${app.application_id}">
                                 <i class="fas fa-times"></i> Rút
+                            </button>
+                        ` : ''}
+                        ${app.status === 'withdrawn' ? `
+                            <button class="btn btn-primary btn-sm reapply-btn" data-job-id="${app.job_id}">
+                                <i class="fas fa-redo"></i> Ứng tuyển lại
                             </button>
                         ` : ''}
                     </div>
@@ -764,8 +771,8 @@ async function quickApply(jobId, buttonElement = null) {
         
         // Check if already applied
         try {
-            const checkResult = await RecruitmentApp.apiCall(`../../api/applications.php?check_applied=1&job_id=${jobId}`);
-            if (checkResult.success && checkResult.already_applied) {
+            const checkResult = await RecruitmentApp.apiCall(`../../api/applications.php?check_application=1&job_id=${jobId}`);
+            if (checkResult.success && !checkResult.data.can_apply) {
                 RecruitmentApp.showAlert('Bạn đã ứng tuyển công việc này rồi', 'warning');
                 return;
             }
@@ -1032,6 +1039,15 @@ function setupApplicationsEventListeners() {
             e.preventDefault();
             const applicationId = this.dataset.applicationId;
             withdrawApplication(applicationId);
+        });
+    });
+    
+    // Re-apply buttons
+    document.querySelectorAll('.reapply-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const jobId = this.dataset.jobId;
+            quickApply(jobId, this);
         });
     });
 }

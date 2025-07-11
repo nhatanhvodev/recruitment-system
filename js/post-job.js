@@ -10,13 +10,81 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
+    // Check post type from sessionStorage
+    const postType = sessionStorage.getItem('postType');
+    setupPostingMode(postType);
+    
     setupFormValidation();
     setupCharacterCounts();
     setupEditorToolbar();
     setupFormSubmission();
     setupPreview();
     loadUserCompanyInfo();
+    
+    // Clear the postType from sessionStorage after using it
+    sessionStorage.removeItem('postType');
 });
+
+function setupPostingMode(postType) {
+    console.log('Setting up posting mode:', postType);
+    
+    const pageHeader = document.querySelector('.page-header h1');
+    const formSections = document.querySelectorAll('.form-section');
+    
+    if (postType === 'quick') {
+        // Update page title for quick posting
+        if (pageHeader) {
+            pageHeader.innerHTML = '<i class="fas fa-zap"></i> Đăng tin nhanh';
+        }
+        
+        // Show only essential sections for quick posting
+        formSections.forEach((section, index) => {
+            if (index === 0 || index === 1) { // Basic info and job description only
+                section.style.display = 'block';
+            } else {
+                section.style.display = 'none';
+            }
+        });
+        
+        // Add quick posting notice
+        const quickNotice = document.createElement('div');
+        quickNotice.className = 'quick-posting-notice';
+        quickNotice.innerHTML = `
+            <div style="background: #e3f2fd; border: 1px solid #2196f3; border-radius: 8px; padding: 1rem; margin-bottom: 2rem;">
+                <p style="margin: 0; color: #1976d2;">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Đăng tin nhanh:</strong> Chỉ cần điền thông tin cơ bản. 
+                    Bạn có thể chỉnh sửa thêm chi tiết sau khi đăng tin.
+                </p>
+            </div>
+        `;
+        
+        const firstSection = document.querySelector('.form-section');
+        if (firstSection) {
+            firstSection.parentNode.insertBefore(quickNotice, firstSection);
+        }
+        
+    } else if (postType === 'detailed') {
+        // Update page title for detailed posting
+        if (pageHeader) {
+            pageHeader.innerHTML = '<i class="fas fa-edit"></i> Đăng tin chi tiết';
+        }
+        
+        // Show all sections for detailed posting
+        formSections.forEach(section => {
+            section.style.display = 'block';
+        });
+    } else {
+        // Default mode - show all sections
+        if (pageHeader) {
+            pageHeader.innerHTML = '<i class="fas fa-plus-circle"></i> Đăng tin tuyển dụng';
+        }
+        
+        formSections.forEach(section => {
+            section.style.display = 'block';
+        });
+    }
+}
 
 function checkRecruiterAuth() {
     currentUser = RecruitmentApp.getCurrentUser();

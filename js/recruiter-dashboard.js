@@ -102,6 +102,35 @@ function initializeDashboard() {
         });
     }
     
+    // Quick post job functionality
+    const quickPostJobBtn = document.getElementById('quick-post-job');
+    if (quickPostJobBtn) {
+        quickPostJobBtn.addEventListener('click', function() {
+            // Set post type in sessionStorage for post-job page to read
+            sessionStorage.setItem('postType', 'quick');
+            window.location.href = '../post-job.html';
+        });
+    }
+    
+    // Detailed post job functionality
+    const detailedPostJobBtn = document.getElementById('detailed-post-job');
+    if (detailedPostJobBtn) {
+        detailedPostJobBtn.addEventListener('click', function() {
+            // Set post type in sessionStorage for post-job page to read
+            sessionStorage.setItem('postType', 'detailed');
+            window.location.href = '../post-job.html';
+        });
+    }
+    
+    // Create job button functionality (in jobs tab)
+    const createJobBtn = document.getElementById('create-job-btn');
+    if (createJobBtn) {
+        createJobBtn.addEventListener('click', function() {
+            sessionStorage.setItem('postType', 'detailed');
+            window.location.href = '../post-job.html';
+        });
+    }
+    
     // Load user data
     try {
         loadUserData();
