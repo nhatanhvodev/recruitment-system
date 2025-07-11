@@ -213,23 +213,12 @@ async function handleJobApply() {
     
     // Check application status before showing modal
     try {
-        const checkResult = await RecruitmentApp.apiCall(`../api/applications.php?check_application=1&job_id=${currentJobId}`);
+        const checkResult = await RecruitmentApp.apiCall(`../api/applications.php?check_applied=1&job_id=${currentJobId}`);
         console.log('Application check result:', checkResult);
         
-        if (checkResult.success && checkResult.data) {
-            const { applications, can_apply } = checkResult.data;
-            
-            if (!can_apply && applications.length > 0) {
-                const activeApp = applications.find(app => app.status !== 'withdrawn');
-                if (activeApp) {
-                    RecruitmentApp.showAlert(
-                        `Bạn đã ứng tuyển vào vị trí này rồi (Trạng thái: ${activeApp.status}, Ngày: ${RecruitmentApp.formatDate(activeApp.applied_at)}). ` +
-                        `Bạn có thể xem chi tiết trong dashboard.`, 
-                        'warning'
-                    );
-                    return;
-                }
-            }
+        if (checkResult.success && checkResult.already_applied) {
+            RecruitmentApp.showAlert('Bạn đã ứng tuyển công việc này rồi', 'warning');
+            return;
         }
     } catch (error) {
         console.log('Could not check application status:', error);
@@ -442,7 +431,7 @@ async function debugApplicationStatus() {
     
     try {
         // Check application status
-        const checkResult = await RecruitmentApp.apiCall(`../api/applications.php?check_application=1&job_id=${currentJobId}`);
+        const checkResult = await RecruitmentApp.apiCall(`../api/applications.php?check_applied=1&job_id=${currentJobId}`);
         
         let debugInfo = `=== DEBUG THÔNG TIN ỨNG TUYỂN ===\n\n`;
         debugInfo += `User ID: ${user.user_id}\n`;
@@ -453,16 +442,17 @@ async function debugApplicationStatus() {
         if (checkResult.success) {
             const data = checkResult.data;
             debugInfo += `Candidate ID: ${data.candidate_id}\n`;
+            debugInfo += `Đã ứng tuyển: ${checkResult.already_applied ? 'CÓ' : 'KHÔNG'}\n`;
             debugInfo += `Có thể ứng tuyển: ${data.can_apply ? 'CÓ' : 'KHÔNG'}\n`;
-            debugInfo += `Số đơn ứng tuyển hiện tại: ${data.applications.length}\n\n`;
+            debugInfo += `Số đơn ứng tuyển active: ${data.active_applications.length}\n\n`;
             
-            if (data.applications.length > 0) {
-                debugInfo += `Chi tiết các đơn ứng tuyển:\n`;
-                data.applications.forEach((app, index) => {
+            if (data.active_applications.length > 0) {
+                debugInfo += `Chi tiết các đơn ứng tuyển active:\n`;
+                data.active_applications.forEach((app, index) => {
                     debugInfo += `${index + 1}. ID: ${app.application_id}, Trạng thái: ${app.status}, Ngày: ${app.applied_at}\n`;
                 });
             } else {
-                debugInfo += `Không có đơn ứng tuyển nào.\n`;
+                debugInfo += `Không có đơn ứng tuyển active nào.\n`;
             }
         } else {
             debugInfo += `LỖI: ${checkResult.message}\n`;
