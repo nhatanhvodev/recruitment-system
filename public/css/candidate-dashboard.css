@@ -75,6 +75,11 @@
     font-size: 2rem;
 }
 
+.nav-right {
+    display: flex;
+    align-items: center;
+}
+
 .user-profile-nav {
     display: flex;
     align-items: center;
@@ -96,6 +101,11 @@
 .user-info {
     display: flex;
     flex-direction: column;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
 }
 
 .user-name {
@@ -1086,6 +1096,11 @@
 }
 
 /* Profile Content */
+.profile-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
 .profile-form {
     display: flex;
     flex-direction: column;
