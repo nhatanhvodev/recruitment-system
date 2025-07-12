@@ -63,17 +63,24 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
                     'data' => $jobs
                 ]);
             } else {
-                // Recruiter hasn't been assigned to a company yet
+                // Recruiter has no company yet, return empty list
                 echo json_encode([
                     'success' => true,
                     'data' => [],
-                    'message' => 'Chưa được gán vào công ty nào. Vui lòng liên hệ admin để cập nhật thông tin công ty.'
+                    'message' => 'Chưa có tin tuyển dụng nào. Hãy đăng tin đầu tiên!'
                 ]);
             }
         } else {
+            // Create recruiter record if not exists
+            $insert_recruiter = "INSERT INTO recruiters (user_id, position) VALUES (:user_id, 'Recruiter')";
+            $stmt = $db->prepare($insert_recruiter);
+            $stmt->bindParam(':user_id', $user_id);
+            $stmt->execute();
+            
             echo json_encode([
-                'success' => false,
-                'message' => 'Không tìm thấy thông tin recruiter'
+                'success' => true,
+                'data' => [],
+                'message' => 'Chưa có tin tuyển dụng nào. Hãy đăng tin đầu tiên!'
             ]);
         }
         
@@ -128,8 +135,12 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
     
     $data = json_decode(file_get_contents("php://input"));
     
-    // Get recruiter's company_id
+    // Get or create company for recruiter
     $user_id = $_SESSION['user_id'];
+    $user_email = $_SESSION['email'];
+    $user_name = $_SESSION['full_name'] ?? 'Unknown';
+    
+    // Check if recruiter has a company
     $query = "SELECT company_id FROM recruiters WHERE user_id = :user_id";
     $stmt = $db->prepare($query);
     $stmt->bindParam(':user_id', $user_id);
@@ -138,20 +149,49 @@ if($_SERVER['REQUEST_METHOD'] == 'GET') {
     if($stmt->rowCount() > 0) {
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         $company_id = $row['company_id'];
+    } else {
+        // Create recruiter record if not exists
+        $insert_recruiter = "INSERT INTO recruiters (user_id, position) VALUES (:user_id, 'Recruiter')";
+        $stmt = $db->prepare($insert_recruiter);
+        $stmt->bindParam(':user_id', $user_id);
+        $stmt->execute();
+        $company_id = null;
+    }
+    
+    // If no company assigned, create a default company
+    if (!$company_id) {
+        // Create a default company for this recruiter
+        $company_name = $data->company_name ?? $user_name . "'s Company";
+        $company_description = $data->company_description ?? 'Company created by ' . $user_name;
+        $company_address = $data->company_address ?? '';
+        $company_website = $data->company_website ?? '';
+        $company_industry = $data->company_industry ?? 'General';
         
-        if (!$company_id) {
+        $create_company = "INSERT INTO companies (name, description, address, website, industry, is_verified) 
+                          VALUES (:name, :description, :address, :website, :industry, TRUE)";
+        $stmt = $db->prepare($create_company);
+        $stmt->bindParam(':name', $company_name);
+        $stmt->bindParam(':description', $company_description);
+        $stmt->bindParam(':address', $company_address);
+        $stmt->bindParam(':website', $company_website);
+        $stmt->bindParam(':industry', $company_industry);
+        
+        if ($stmt->execute()) {
+            $company_id = $db->lastInsertId();
+            
+            // Update recruiter with new company
+            $update_recruiter = "UPDATE recruiters SET company_id = :company_id WHERE user_id = :user_id";
+            $stmt = $db->prepare($update_recruiter);
+            $stmt->bindParam(':company_id', $company_id);
+            $stmt->bindParam(':user_id', $user_id);
+            $stmt->execute();
+        } else {
             echo json_encode([
                 'success' => false,
-                'message' => 'Bạn chưa được gán vào công ty nào. Vui lòng liên hệ admin để cập nhật thông tin công ty.'
+                'message' => 'Có lỗi xảy ra khi tạo công ty'
             ]);
             exit;
         }
-    } else {
-        echo json_encode([
-            'success' => false,
-            'message' => 'Không tìm thấy thông tin recruiter'
-        ]);
-        exit;
     }
     
     if(isset($data->title) && isset($data->description)) {

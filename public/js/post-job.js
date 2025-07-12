@@ -115,9 +115,30 @@ async function loadUserCompanyInfo() {
             if (result.data[0].email) {
                 document.getElementById('contact-email').value = result.data[0].email;
             }
+            // Hide company info section if user already has a company
+            const companySection = document.getElementById('company-info-section');
+            if (companySection) {
+                companySection.style.display = 'none';
+            }
+        } else {
+            // Show company info section if user doesn't have a company
+            const companySection = document.getElementById('company-info-section');
+            if (companySection) {
+                companySection.style.display = 'block';
+                // Make company name required
+                const companyNameInput = document.getElementById('company-name');
+                if (companyNameInput) {
+                    companyNameInput.required = true;
+                }
+            }
         }
     } catch (error) {
         console.error('Error loading company info:', error);
+        // Show company info section on error (assume no company)
+        const companySection = document.getElementById('company-info-section');
+        if (companySection) {
+            companySection.style.display = 'block';
+        }
     }
 }
 
@@ -358,6 +379,16 @@ function validateForm() {
         }
     });
     
+    // Check if company info is required
+    const companySection = document.getElementById('company-info-section');
+    if (companySection && companySection.style.display !== 'none') {
+        const companyName = document.getElementById('company-name')?.value?.trim();
+        if (!companyName) {
+            showFieldError(document.getElementById('company-name'), 'Tên công ty là bắt buộc');
+            isValid = false;
+        }
+    }
+    
     return isValid;
 }
 
@@ -388,6 +419,21 @@ function collectFormData() {
     formData.contact_person = document.getElementById('contact-person').value.trim();
     formData.contact_email = document.getElementById('contact-email').value.trim();
     formData.contact_phone = document.getElementById('contact-phone').value.trim();
+    
+    // Company info (for new recruiters without company)
+    const companyName = document.getElementById('company-name')?.value?.trim();
+    const companyDescription = document.getElementById('company-description')?.value?.trim();
+    const companyAddress = document.getElementById('company-address')?.value?.trim();
+    const companyWebsite = document.getElementById('company-website')?.value?.trim();
+    const companyIndustry = document.getElementById('company-industry')?.value?.trim();
+    
+    if (companyName) {
+        formData.company_name = companyName;
+        formData.company_description = companyDescription || `Company created by ${currentUser?.full_name || 'Recruiter'}`;
+        formData.company_address = companyAddress || '';
+        formData.company_website = companyWebsite || '';
+        formData.company_industry = companyIndustry || 'General';
+    }
     
     return formData;
 }

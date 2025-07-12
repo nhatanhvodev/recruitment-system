@@ -555,3 +555,37 @@
  .success-message i {
      color: #28a745;
  }
+ 
+ /* Company Information Section */
+ .company-notice {
+     background: #e3f2fd;
+     border: 1px solid #2196f3;
+     border-radius: 8px;
+     padding: 1rem;
+     margin-bottom: 1.5rem;
+ }
+ 
+ .company-notice p {
+     margin: 0;
+     color: #1976d2;
+     display: flex;
+     align-items: center;
+     gap: 0.5rem;
+ }
+ 
+ .company-notice i {
+     color: #2196f3;
+ }
+ 
+ #company-info-section {
+     border: 2px dashed #2196f3;
+     background: #f8f9ff;
+ }
+ 
+ #company-info-section h3 {
+     color: #1976d2;
+ }
+ 
+ #company-info-section h3 i {
+     color: #2196f3;
+ }

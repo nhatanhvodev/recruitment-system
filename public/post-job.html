@@ -192,6 +192,55 @@
                             </div>
                         </div>
 
+                        <!-- Company Information (for new recruiters) -->
+                        <div class="form-section" id="company-info-section" style="display: none;">
+                            <h3><i class="fas fa-building"></i> Thông tin công ty</h3>
+                            <div class="company-notice">
+                                <p><i class="fas fa-info-circle"></i> Bạn chưa có công ty. Hãy điền thông tin công ty để đăng tin tuyển dụng.</p>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="company-name">Tên công ty *</label>
+                                    <input type="text" id="company-name" name="company_name" 
+                                           placeholder="VD: Công ty TNHH ABC">
+                                </div>
+                                <div class="form-group">
+                                    <label for="company-industry">Ngành nghề</label>
+                                    <select id="company-industry" name="company_industry">
+                                        <option value="">Chọn ngành nghề</option>
+                                        <option value="Technology">Công nghệ thông tin</option>
+                                        <option value="Finance">Tài chính - Ngân hàng</option>
+                                        <option value="Marketing">Marketing - Quảng cáo</option>
+                                        <option value="Education">Giáo dục - Đào tạo</option>
+                                        <option value="Healthcare">Y tế - Chăm sóc sức khỏe</option>
+                                        <option value="Manufacturing">Sản xuất - Công nghiệp</option>
+                                        <option value="Retail">Bán lẻ - Thương mại</option>
+                                        <option value="General">Khác</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="company-address">Địa chỉ công ty</label>
+                                    <input type="text" id="company-address" name="company_address" 
+                                           placeholder="VD: 123 Nguyễn Huệ, Quận 1, TP.HCM">
+                                </div>
+                                <div class="form-group">
+                                    <label for="company-website">Website công ty</label>
+                                    <input type="url" id="company-website" name="company_website" 
+                                           placeholder="VD: https://www.company.com">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="company-description">Mô tả công ty</label>
+                                <textarea id="company-description" name="company_description" rows="3"
+                                          placeholder="Giới thiệu ngắn gọn về công ty, lĩnh vực hoạt động, quy mô..."></textarea>
+                            </div>
+                        </div>
+
                         <!-- Contact Information -->
                         <div class="form-section">
                             <h3><i class="fas fa-envelope"></i> Thông tin liên hệ</h3>
